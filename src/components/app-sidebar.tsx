@@ -16,6 +16,7 @@ import {
   Settings,
   LogOut,
   DoorOpen,
+  Library,
 } from "lucide-react";
 import {
   Sidebar,
@@ -46,6 +47,7 @@ const nav = [
   { title: "Fournisseurs", to: "/suppliers", icon: Truck },
   { title: "SST & carte", to: "/subcontractors", icon: MapPinned },
   { title: "Contrats", to: "/contracts", icon: ScrollText },
+  { title: "Documentation", to: "/docs", icon: Library },
 ];
 
 export function AppSidebar() {
