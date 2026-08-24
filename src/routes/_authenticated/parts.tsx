@@ -27,6 +27,10 @@ import {
   Calculator,
   TrendingUp,
   Ruler,
+  ExternalLink,
+  Globe,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -306,6 +310,7 @@ function PartsPage() {
   const [compatOpen, setCompatOpen] = useState<any>(null);
   const [componentsOpen, setComponentsOpen] = useState<any>(null);
   const [equivalencesOpen, setEquivalencesOpen] = useState<any>(null);
+  const [supplierInfo, setSupplierInfo] = useState<any>(null);
   const [selectedEquivalentPartIds, setSelectedEquivalentPartIds] = useState<string[]>([]);
   const [vantailConfiguratorOpen, setVantailConfiguratorOpen] = useState(false);
   const [componentDraft, setComponentDraft] = useState({
@@ -543,6 +548,7 @@ function PartsPage() {
           .join(" | "),
         description: part.description,
         photo_url: part.photo_url,
+        lien_piece: part.documentation_url,
         longueur_m: part.length_meters,
         largeur_m: part.width_meters,
         poids_kg: part.weight_kg,
@@ -562,6 +568,7 @@ function PartsPage() {
           fournisseur_nom: supplier?.name,
           fournisseur_email: supplier?.email,
           fournisseur_telephone: supplier?.phone,
+          fournisseur_site_internet: supplier?.website_url,
           ref_fournisseur: link.supplier_ref,
           prix_achat: link.purchase_price,
           frais_port: link.shipping_cost,
@@ -579,6 +586,7 @@ function PartsPage() {
       "modeles_portes_compatibles",
       "description",
       "photo_url",
+      "lien_piece",
       "longueur_m",
       "largeur_m",
       "poids_kg",
@@ -592,6 +600,7 @@ function PartsPage() {
       "fournisseur_nom",
       "fournisseur_email",
       "fournisseur_telephone",
+      "fournisseur_site_internet",
       "ref_fournisseur",
       "prix_achat",
       "frais_port",
@@ -701,6 +710,7 @@ function PartsPage() {
           brand_id: partBrand?.id ?? null,
           description: pick(row, "description") || null,
           photo_url: pick(row, "photo_url", "photo", "image") || null,
+          documentation_url: pick(row, "lien_piece", "documentation_url", "product_url") || null,
           sale_price: parseCsvNumber(pick(row, "prix_vente", "sale_price")),
           pricing_unit: pick(row, "unite_chiffrage", "pricing_unit") || "unit",
           length_meters: pick(row, "longueur_m", "length_meters")
@@ -909,6 +919,8 @@ function PartsPage() {
               "telephone_fournisseur",
               "supplier_phone",
             ) || null,
+          website_url:
+            pick(row, "fournisseur_site_internet", "supplier_website", "website_url") || null,
         };
         if (supplier) {
           const { data, error } = await (supabase.from("suppliers") as any)
@@ -1111,6 +1123,7 @@ function PartsPage() {
       category: fd.get("category") || null,
       brand_id: fd.get("brand_id") || null,
       description: fd.get("description") || null,
+      documentation_url: fd.get("documentation_url") || null,
       photo_url: photoUrl,
       sale_price: Number(fd.get("sale_price") ?? salePrice ?? 0),
       pricing_unit: fd.get("pricing_unit") || "unit",
@@ -1471,11 +1484,8 @@ function PartsPage() {
             const isVantail = isVantailPart(p);
             const replacementPart = parts.find((part: any) => part.id === p.replacement_part_id);
             const linkedSupplierParts = supplierParts.filter((sp: any) => sp.part_id === p.id);
-            const linkedSupplierNames = linkedSupplierParts
-              .map(
-                (sp: any) =>
-                  suppliers.find((supplier: any) => supplier.id === sp.supplier_id)?.name,
-              )
+            const linkedSuppliers = linkedSupplierParts
+              .map((sp: any) => suppliers.find((supplier: any) => supplier.id === sp.supplier_id))
               .filter(Boolean);
             return (
               <Card key={p.id} className="p-4">
@@ -1541,12 +1551,37 @@ function PartsPage() {
                             </span>
                           </>
                         )}
-                        {linkedSupplierNames.length > 0 && (
+                        {linkedSuppliers.length > 0 && (
                           <>
                             <span className="mx-2 text-muted-foreground">·</span>
                             <span className="text-muted-foreground">
-                              Fournisseur : {linkedSupplierNames.join(", ")}
+                              Fournisseur :{" "}
+                              {linkedSuppliers.map((supplier: any, index: number) => (
+                                <span key={supplier.id}>
+                                  {index > 0 && ", "}
+                                  <button
+                                    type="button"
+                                    className="font-medium text-primary hover:underline"
+                                    onClick={() => setSupplierInfo(supplier)}
+                                  >
+                                    {supplier.name}
+                                  </button>
+                                </span>
+                              ))}
                             </span>
+                          </>
+                        )}
+                        {p.documentation_url && (
+                          <>
+                            <span className="mx-2 text-muted-foreground">·</span>
+                            <a
+                              href={p.documentation_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+                            >
+                              Voir la pièce en ligne <ExternalLink className="h-3 w-3" />
+                            </a>
                           </>
                         )}
                         {componentCount > 0 && (
@@ -1725,6 +1760,60 @@ function PartsPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!supplierInfo} onOpenChange={(isOpen) => !isOpen && setSupplierInfo(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5 text-primary" />
+              {supplierInfo?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            {supplierInfo?.email && (
+              <a
+                href={`mailto:${supplierInfo.email}`}
+                className="flex items-center gap-2 text-primary hover:underline"
+              >
+                <Mail className="h-4 w-4" /> {supplierInfo.email}
+              </a>
+            )}
+            {supplierInfo?.phone && (
+              <a
+                href={`tel:${supplierInfo.phone}`}
+                className="flex items-center gap-2 text-primary hover:underline"
+              >
+                <Phone className="h-4 w-4" /> {supplierInfo.phone}
+              </a>
+            )}
+            {supplierInfo?.website_url && (
+              <Button asChild className="w-full">
+                <a href={supplierInfo.website_url} target="_blank" rel="noreferrer">
+                  Visiter le site internet <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            )}
+            {supplierInfo?.payment_terms && (
+              <div>
+                <span className="font-medium">Conditions de paiement : </span>
+                <span className="text-muted-foreground">{supplierInfo.payment_terms}</span>
+              </div>
+            )}
+            {supplierInfo?.notes && (
+              <div className="rounded-md bg-muted p-3 whitespace-pre-wrap text-muted-foreground">
+                {supplierInfo.notes}
+              </div>
+            )}
+            {!supplierInfo?.email &&
+              !supplierInfo?.phone &&
+              !supplierInfo?.website_url &&
+              !supplierInfo?.payment_terms &&
+              !supplierInfo?.notes && (
+                <p className="text-muted-foreground">Aucune information complémentaire.</p>
+              )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -1743,6 +1832,15 @@ function PartsPage() {
             <div>
               <Label>Nom *</Label>
               <Input name="name" required defaultValue={edit?.name} />
+            </div>
+            <div>
+              <Label>Lien vers la pièce sur le site internet</Label>
+              <Input
+                name="documentation_url"
+                type="url"
+                placeholder="https://…"
+                defaultValue={edit?.documentation_url ?? ""}
+              />
             </div>
             <div className="grid gap-3 sm:grid-cols-[96px_1fr]">
               <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-md border border-border/60 bg-muted text-muted-foreground">
