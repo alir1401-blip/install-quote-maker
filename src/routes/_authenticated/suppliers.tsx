@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Truck, Pencil, Trash2, DollarSign, Download, Upload } from "lucide-react";
+import { Plus, Truck, Pencil, Trash2, DollarSign, Download, Upload, Globe } from "lucide-react";
 import { downloadCsv, importCsvFile, pick } from "@/lib/csv";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,6 +55,7 @@ function SuppliersList() {
         nom: s.name,
         email: s.email,
         telephone: s.phone,
+        site_internet: s.website_url,
         conditions_paiement: s.payment_terms,
         titulaire_compte: s.account_holder,
         iban: s.iban,
@@ -65,6 +66,7 @@ function SuppliersList() {
         "nom",
         "email",
         "telephone",
+        "site_internet",
         "conditions_paiement",
         "titulaire_compte",
         "iban",
@@ -88,6 +90,7 @@ function SuppliersList() {
           name,
           email: pick(row, "email") || null,
           phone: pick(row, "telephone", "phone") || null,
+          website_url: pick(row, "site_internet", "website", "website_url") || null,
           payment_terms: pick(row, "conditions_paiement", "payment_terms") || null,
           account_holder: pick(row, "titulaire_compte", "account_holder") || null,
           iban: pick(row, "iban") || null,
@@ -139,6 +142,7 @@ function SuppliersList() {
       name: fd.get("name"),
       email: fd.get("email") || null,
       phone: fd.get("phone") || null,
+      website_url: fd.get("website_url") || null,
       payment_terms: fd.get("payment_terms") || null,
       iban: fd.get("iban") || null,
       bic: fd.get("bic") || null,
@@ -222,6 +226,18 @@ function SuppliersList() {
                       <div className="text-xs text-muted-foreground">
                         {[s.email, s.phone, s.payment_terms].filter(Boolean).join(" · ") || "—"}
                       </div>
+                      {s.website_url && (
+                        <a
+                          href={s.website_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Globe className="h-3 w-3" />
+                          Site internet
+                        </a>
+                      )}
                       {(s.account_holder || s.iban || s.bic) && (
                         <div className="mt-1 text-xs text-muted-foreground">
                           Paiement : {[s.account_holder, s.iban, s.bic].filter(Boolean).join(" · ")}
@@ -290,6 +306,15 @@ function SuppliersList() {
                 <Label>Téléphone</Label>
                 <Input name="phone" defaultValue={edit?.phone} />
               </div>
+            </div>
+            <div>
+              <Label>Site internet</Label>
+              <Input
+                name="website_url"
+                type="url"
+                placeholder="https://…"
+                defaultValue={edit?.website_url}
+              />
             </div>
             <div className="space-y-3 rounded-md border border-border/60 p-3">
               <div className="text-sm font-medium">Informations de paiement</div>
