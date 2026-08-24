@@ -3373,6 +3373,7 @@ export type Database = {
           payment_terms: string | null
           phone: string | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           account_holder?: string | null
@@ -3387,6 +3388,7 @@ export type Database = {
           payment_terms?: string | null
           phone?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           account_holder?: string | null
@@ -3401,6 +3403,7 @@ export type Database = {
           payment_terms?: string | null
           phone?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
