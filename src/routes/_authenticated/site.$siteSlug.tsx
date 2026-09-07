@@ -62,6 +62,7 @@ function SiteDetail() {
   });
   const storageLocationIds = storageLocations.map((location: any) => location.id);
   const { data: storageStocks = [] } = useList<any>("storage_location_stocks", {
+    orderBy: "updated_at",
     filter: (q: any) => q.in("storage_location_id", storageLocationIds),
     key: ["storage_location_stocks", "bySite", siteId, storageLocationIds.join(",")],
     enabled: storageLocationIds.length > 0,
