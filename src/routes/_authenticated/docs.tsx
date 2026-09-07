@@ -2,7 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, FileText, Library, Plus, Search, Trash2, Upload } from "lucide-react";
+import { ExternalLink, FileText, Plus, Search, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, EmptyState } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -170,7 +170,6 @@ function DocumentsPage() {
       </div>
       {!isLoading && filtered.length === 0 ? (
         <EmptyState
-          icon={Library}
           title="Aucune documentation"
           description="Ajoutez un PDF ou un lien pour constituer votre bibliothèque technique."
           action={
