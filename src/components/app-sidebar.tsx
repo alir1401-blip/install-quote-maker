@@ -17,6 +17,7 @@ import {
   LogOut,
   DoorOpen,
   Library,
+  Webhook,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,6 +35,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 const nav = [
+  { title: "Webhooks", to: "/webhooks", icon: Webhook },
   { title: "Tableau de bord", to: "/dashboard", icon: LayoutDashboard },
   { title: "Devis", to: "/quotes", icon: FileText },
   { title: "Tickets", to: "/tickets", icon: ClipboardList },
