@@ -24,6 +24,7 @@ create table public.webhook_events (
   )
 );
 
+
 create index webhook_events_owner_received_idx on public.webhook_events(owner_id, received_at desc);
 create index webhook_events_endpoint_received_idx on public.webhook_events(endpoint_id, received_at desc);
 
