@@ -2,7 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, FileText, Library, Plus, Search, Trash2, Upload } from "lucide-react";
+import { ExternalLink, FileText, Plus, Search, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, EmptyState } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
