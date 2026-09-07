@@ -84,7 +84,9 @@ function TicketDetail() {
   const { data: partOrders = [] } = useList<any>("part_orders");
   const { data: partOrderItems = [] } = useList<any>("part_order_items");
   const { data: storageLocations = [] } = useList<any>("storage_locations");
-  const { data: storageStocks = [] } = useList<any>("storage_location_stocks");
+  const { data: storageStocks = [] } = useList<any>("storage_location_stocks", {
+    orderBy: "updated_at",
+  });
   const { data: stockMovements = [] } = useList<any>("stock_movements");
   const { data: invoices = [] } = useList<any>("invoices");
   const { data: invoiceItems = [] } = useList<any>("invoice_items");

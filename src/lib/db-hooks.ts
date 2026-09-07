@@ -8,6 +8,7 @@ export type TableName =
   | "clients"
   | "sites"
   | "site_contacts"
+  | "documents"
   | "installations"
   | "installation_types"
   | "part_categories"

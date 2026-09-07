@@ -170,7 +170,6 @@ function DocumentsPage() {
       </div>
       {!isLoading && filtered.length === 0 ? (
         <EmptyState
-          icon={Library}
           title="Aucune documentation"
           description="Ajoutez un PDF ou un lien pour constituer votre bibliothèque technique."
           action={
