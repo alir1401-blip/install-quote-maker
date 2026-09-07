@@ -9,56 +9,110 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
-import { Route as AuthenticatedContractsRouteImport } from './routes/_authenticated/contracts'
-import { Route as AuthenticatedCostSettingsRouteImport } from './routes/_authenticated/cost-settings'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedDocsRouteImport } from './routes/_authenticated/docs'
-import { Route as AuthenticatedGrandAccountsRouteImport } from './routes/_authenticated/grand-accounts'
-import { Route as AuthenticatedInstallationsRouteImport } from './routes/_authenticated/installations'
-import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
-import { Route as AuthenticatedPartsRouteImport } from './routes/_authenticated/parts'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated/sites'
-import { Route as AuthenticatedStorageLocationsRouteImport } from './routes/_authenticated/storage-locations'
-import { Route as AuthenticatedSubcontractorsRouteImport } from './routes/_authenticated/subcontractors'
-import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated/suppliers'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
-import { Route as AuthenticatedClientsClientIdRouteImport } from './routes/_authenticated/clients.$clientId'
-import { Route as AuthenticatedInstallationInstallationSlugRouteImport } from './routes/_authenticated/installation.$installationSlug'
+import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated/suppliers'
+import { Route as AuthenticatedSubcontractorsRouteImport } from './routes/_authenticated/subcontractors'
+import { Route as AuthenticatedStorageLocationsRouteImport } from './routes/_authenticated/storage-locations'
+import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated/sites'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedPartsRouteImport } from './routes/_authenticated/parts'
+import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedInstallationsRouteImport } from './routes/_authenticated/installations'
+import { Route as AuthenticatedGrandAccountsRouteImport } from './routes/_authenticated/grand-accounts'
+import { Route as AuthenticatedDocsRouteImport } from './routes/_authenticated/docs'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCostSettingsRouteImport } from './routes/_authenticated/cost-settings'
+import { Route as AuthenticatedContractsRouteImport } from './routes/_authenticated/contracts'
+import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedQuotesIndexRouteImport } from './routes/_authenticated/quotes.index'
-import { Route as AuthenticatedQuotesQuoteIdRouteImport } from './routes/_authenticated/quotes.$quoteId'
-import { Route as AuthenticatedQuotesNewRouteImport } from './routes/_authenticated/quotes.new'
-import { Route as AuthenticatedSiteSiteSlugRouteImport } from './routes/_authenticated/site.$siteSlug'
-import { Route as AuthenticatedStockTicketsLocationIdRouteImport } from './routes/_authenticated/stock-tickets.$locationId'
-import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers.$supplierId'
 import { Route as AuthenticatedTicketTicketSlugRouteImport } from './routes/_authenticated/ticket.$ticketSlug'
+import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers.$supplierId'
+import { Route as AuthenticatedStockTicketsLocationIdRouteImport } from './routes/_authenticated/stock-tickets.$locationId'
+import { Route as AuthenticatedSiteSiteSlugRouteImport } from './routes/_authenticated/site.$siteSlug'
+import { Route as AuthenticatedQuotesNewRouteImport } from './routes/_authenticated/quotes.new'
+import { Route as AuthenticatedQuotesQuoteIdRouteImport } from './routes/_authenticated/quotes.$quoteId'
+import { Route as AuthenticatedInstallationInstallationSlugRouteImport } from './routes/_authenticated/installation.$installationSlug'
+import { Route as AuthenticatedClientsClientIdRouteImport } from './routes/_authenticated/clients.$clientId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
-  id: '/clients',
-  path: '/clients',
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedContractsRoute = AuthenticatedContractsRouteImport.update({
-  id: '/contracts',
-  path: '/contracts',
+const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSubcontractorsRoute =
+  AuthenticatedSubcontractorsRouteImport.update({
+    id: '/subcontractors',
+    path: '/subcontractors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStorageLocationsRoute =
+  AuthenticatedStorageLocationsRouteImport.update({
+    id: '/storage-locations',
+    path: '/storage-locations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSitesRoute = AuthenticatedSitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPartsRoute = AuthenticatedPartsRouteImport.update({
+  id: '/parts',
+  path: '/parts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedInstallationsRoute =
+  AuthenticatedInstallationsRouteImport.update({
+    id: '/installations',
+    path: '/installations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedGrandAccountsRoute =
+  AuthenticatedGrandAccountsRouteImport.update({
+    id: '/grand-accounts',
+    path: '/grand-accounts',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDocsRoute = AuthenticatedDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCostSettingsRoute =
@@ -67,109 +121,26 @@ const AuthenticatedCostSettingsRoute =
     path: '/cost-settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedContractsRoute = AuthenticatedContractsRouteImport.update({
+  id: '/contracts',
+  path: '/contracts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDocsRoute = AuthenticatedDocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
+const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedGrandAccountsRoute =
-  AuthenticatedGrandAccountsRouteImport.update({
-    id: '/grand-accounts',
-    path: '/grand-accounts',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedInstallationsRoute =
-  AuthenticatedInstallationsRouteImport.update({
-    id: '/installations',
-    path: '/installations',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPartsRoute = AuthenticatedPartsRouteImport.update({
-  id: '/parts',
-  path: '/parts',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSitesRoute = AuthenticatedSitesRouteImport.update({
-  id: '/sites',
-  path: '/sites',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedStorageLocationsRoute =
-  AuthenticatedStorageLocationsRouteImport.update({
-    id: '/storage-locations',
-    path: '/storage-locations',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSubcontractorsRoute =
-  AuthenticatedSubcontractorsRouteImport.update({
-    id: '/subcontractors',
-    path: '/subcontractors',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedClientsClientIdRoute =
-  AuthenticatedClientsClientIdRouteImport.update({
-    id: '/$clientId',
-    path: '/$clientId',
-    getParentRoute: () => AuthenticatedClientsRoute,
-  } as any)
-const AuthenticatedInstallationInstallationSlugRoute =
-  AuthenticatedInstallationInstallationSlugRouteImport.update({
-    id: '/installation/$installationSlug',
-    path: '/installation/$installationSlug',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedQuotesIndexRoute =
   AuthenticatedQuotesIndexRouteImport.update({
     id: '/quotes/',
     path: '/quotes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedQuotesQuoteIdRoute =
-  AuthenticatedQuotesQuoteIdRouteImport.update({
-    id: '/quotes/$quoteId',
-    path: '/quotes/$quoteId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedQuotesNewRoute = AuthenticatedQuotesNewRouteImport.update({
-  id: '/quotes/new',
-  path: '/quotes/new',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSiteSiteSlugRoute =
-  AuthenticatedSiteSiteSlugRouteImport.update({
-    id: '/site/$siteSlug',
-    path: '/site/$siteSlug',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedStockTicketsLocationIdRoute =
-  AuthenticatedStockTicketsLocationIdRouteImport.update({
-    id: '/stock-tickets/$locationId',
-    path: '/stock-tickets/$locationId',
+const AuthenticatedTicketTicketSlugRoute =
+  AuthenticatedTicketTicketSlugRouteImport.update({
+    id: '/ticket/$ticketSlug',
+    path: '/ticket/$ticketSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSuppliersSupplierIdRoute =
@@ -178,11 +149,40 @@ const AuthenticatedSuppliersSupplierIdRoute =
     path: '/$supplierId',
     getParentRoute: () => AuthenticatedSuppliersRoute,
   } as any)
-const AuthenticatedTicketTicketSlugRoute =
-  AuthenticatedTicketTicketSlugRouteImport.update({
-    id: '/ticket/$ticketSlug',
-    path: '/ticket/$ticketSlug',
+const AuthenticatedStockTicketsLocationIdRoute =
+  AuthenticatedStockTicketsLocationIdRouteImport.update({
+    id: '/stock-tickets/$locationId',
+    path: '/stock-tickets/$locationId',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSiteSiteSlugRoute =
+  AuthenticatedSiteSiteSlugRouteImport.update({
+    id: '/site/$siteSlug',
+    path: '/site/$siteSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedQuotesNewRoute = AuthenticatedQuotesNewRouteImport.update({
+  id: '/quotes/new',
+  path: '/quotes/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedQuotesQuoteIdRoute =
+  AuthenticatedQuotesQuoteIdRouteImport.update({
+    id: '/quotes/$quoteId',
+    path: '/quotes/$quoteId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInstallationInstallationSlugRoute =
+  AuthenticatedInstallationInstallationSlugRouteImport.update({
+    id: '/installation/$installationSlug',
+    path: '/installation/$installationSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClientsClientIdRoute =
+  AuthenticatedClientsClientIdRouteImport.update({
+    id: '/$clientId',
+    path: '/$clientId',
+    getParentRoute: () => AuthenticatedClientsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -367,11 +367,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -381,102 +381,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/clients': {
-      id: '/_authenticated/clients'
-      path: '/clients'
-      fullPath: '/clients'
-      preLoaderRoute: typeof AuthenticatedClientsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/contracts': {
-      id: '/_authenticated/contracts'
-      path: '/contracts'
-      fullPath: '/contracts'
-      preLoaderRoute: typeof AuthenticatedContractsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/cost-settings': {
-      id: '/_authenticated/cost-settings'
-      path: '/cost-settings'
-      fullPath: '/cost-settings'
-      preLoaderRoute: typeof AuthenticatedCostSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/docs': {
-      id: '/_authenticated/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof AuthenticatedDocsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/grand-accounts': {
-      id: '/_authenticated/grand-accounts'
-      path: '/grand-accounts'
-      fullPath: '/grand-accounts'
-      preLoaderRoute: typeof AuthenticatedGrandAccountsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/installations': {
-      id: '/_authenticated/installations'
-      path: '/installations'
-      fullPath: '/installations'
-      preLoaderRoute: typeof AuthenticatedInstallationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/orders': {
-      id: '/_authenticated/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/parts': {
-      id: '/_authenticated/parts'
-      path: '/parts'
-      fullPath: '/parts'
-      preLoaderRoute: typeof AuthenticatedPartsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/sites': {
-      id: '/_authenticated/sites'
-      path: '/sites'
-      fullPath: '/sites'
-      preLoaderRoute: typeof AuthenticatedSitesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/storage-locations': {
-      id: '/_authenticated/storage-locations'
-      path: '/storage-locations'
-      fullPath: '/storage-locations'
-      preLoaderRoute: typeof AuthenticatedStorageLocationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/subcontractors': {
-      id: '/_authenticated/subcontractors'
-      path: '/subcontractors'
-      fullPath: '/subcontractors'
-      preLoaderRoute: typeof AuthenticatedSubcontractorsRouteImport
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/suppliers': {
@@ -486,25 +402,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/tickets': {
-      id: '/_authenticated/tickets'
-      path: '/tickets'
-      fullPath: '/tickets'
-      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
+    '/_authenticated/subcontractors': {
+      id: '/_authenticated/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/subcontractors'
+      preLoaderRoute: typeof AuthenticatedSubcontractorsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/clients/$clientId': {
-      id: '/_authenticated/clients/$clientId'
-      path: '/$clientId'
-      fullPath: '/clients/$clientId'
-      preLoaderRoute: typeof AuthenticatedClientsClientIdRouteImport
-      parentRoute: typeof AuthenticatedClientsRoute
+    '/_authenticated/storage-locations': {
+      id: '/_authenticated/storage-locations'
+      path: '/storage-locations'
+      fullPath: '/storage-locations'
+      preLoaderRoute: typeof AuthenticatedStorageLocationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/installation/$installationSlug': {
-      id: '/_authenticated/installation/$installationSlug'
-      path: '/installation/$installationSlug'
-      fullPath: '/installation/$installationSlug'
-      preLoaderRoute: typeof AuthenticatedInstallationInstallationSlugRouteImport
+    '/_authenticated/sites': {
+      id: '/_authenticated/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof AuthenticatedSitesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parts': {
+      id: '/_authenticated/parts'
+      path: '/parts'
+      fullPath: '/parts'
+      preLoaderRoute: typeof AuthenticatedPartsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orders': {
+      id: '/_authenticated/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/installations': {
+      id: '/_authenticated/installations'
+      path: '/installations'
+      fullPath: '/installations'
+      preLoaderRoute: typeof AuthenticatedInstallationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grand-accounts': {
+      id: '/_authenticated/grand-accounts'
+      path: '/grand-accounts'
+      fullPath: '/grand-accounts'
+      preLoaderRoute: typeof AuthenticatedGrandAccountsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/docs': {
+      id: '/_authenticated/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof AuthenticatedDocsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cost-settings': {
+      id: '/_authenticated/cost-settings'
+      path: '/cost-settings'
+      fullPath: '/cost-settings'
+      preLoaderRoute: typeof AuthenticatedCostSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contracts': {
+      id: '/_authenticated/contracts'
+      path: '/contracts'
+      fullPath: '/contracts'
+      preLoaderRoute: typeof AuthenticatedContractsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clients': {
+      id: '/_authenticated/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof AuthenticatedClientsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/quotes/': {
@@ -514,32 +500,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedQuotesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/quotes/$quoteId': {
-      id: '/_authenticated/quotes/$quoteId'
-      path: '/quotes/$quoteId'
-      fullPath: '/quotes/$quoteId'
-      preLoaderRoute: typeof AuthenticatedQuotesQuoteIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/quotes/new': {
-      id: '/_authenticated/quotes/new'
-      path: '/quotes/new'
-      fullPath: '/quotes/new'
-      preLoaderRoute: typeof AuthenticatedQuotesNewRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/site/$siteSlug': {
-      id: '/_authenticated/site/$siteSlug'
-      path: '/site/$siteSlug'
-      fullPath: '/site/$siteSlug'
-      preLoaderRoute: typeof AuthenticatedSiteSiteSlugRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/stock-tickets/$locationId': {
-      id: '/_authenticated/stock-tickets/$locationId'
-      path: '/stock-tickets/$locationId'
-      fullPath: '/stock-tickets/$locationId'
-      preLoaderRoute: typeof AuthenticatedStockTicketsLocationIdRouteImport
+    '/_authenticated/ticket/$ticketSlug': {
+      id: '/_authenticated/ticket/$ticketSlug'
+      path: '/ticket/$ticketSlug'
+      fullPath: '/ticket/$ticketSlug'
+      preLoaderRoute: typeof AuthenticatedTicketTicketSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/suppliers/$supplierId': {
@@ -549,12 +514,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuppliersSupplierIdRouteImport
       parentRoute: typeof AuthenticatedSuppliersRoute
     }
-    '/_authenticated/ticket/$ticketSlug': {
-      id: '/_authenticated/ticket/$ticketSlug'
-      path: '/ticket/$ticketSlug'
-      fullPath: '/ticket/$ticketSlug'
-      preLoaderRoute: typeof AuthenticatedTicketTicketSlugRouteImport
+    '/_authenticated/stock-tickets/$locationId': {
+      id: '/_authenticated/stock-tickets/$locationId'
+      path: '/stock-tickets/$locationId'
+      fullPath: '/stock-tickets/$locationId'
+      preLoaderRoute: typeof AuthenticatedStockTicketsLocationIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/site/$siteSlug': {
+      id: '/_authenticated/site/$siteSlug'
+      path: '/site/$siteSlug'
+      fullPath: '/site/$siteSlug'
+      preLoaderRoute: typeof AuthenticatedSiteSiteSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quotes/new': {
+      id: '/_authenticated/quotes/new'
+      path: '/quotes/new'
+      fullPath: '/quotes/new'
+      preLoaderRoute: typeof AuthenticatedQuotesNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quotes/$quoteId': {
+      id: '/_authenticated/quotes/$quoteId'
+      path: '/quotes/$quoteId'
+      fullPath: '/quotes/$quoteId'
+      preLoaderRoute: typeof AuthenticatedQuotesQuoteIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/installation/$installationSlug': {
+      id: '/_authenticated/installation/$installationSlug'
+      path: '/installation/$installationSlug'
+      fullPath: '/installation/$installationSlug'
+      preLoaderRoute: typeof AuthenticatedInstallationInstallationSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clients/$clientId': {
+      id: '/_authenticated/clients/$clientId'
+      path: '/$clientId'
+      fullPath: '/clients/$clientId'
+      preLoaderRoute: typeof AuthenticatedClientsClientIdRouteImport
+      parentRoute: typeof AuthenticatedClientsRoute
     }
   }
 }
