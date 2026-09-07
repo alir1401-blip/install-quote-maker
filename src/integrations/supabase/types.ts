@@ -14,6 +14,55 @@ export type Database = {
   }
   public: {
     Tables: {
+      webhook_endpoints: {
+        Row: { id: string; owner_id: string; token: string; created_at: string }
+        Insert: { id?: string; owner_id: string; token?: string; created_at?: string }
+        Update: { id?: string; owner_id?: string; token?: string; created_at?: string }
+        Relationships: []
+      }
+      webhook_events: {
+        Row: {
+          id: string
+          endpoint_id: string
+          owner_id: string
+          received_at: string
+          content_type: string
+          headers: Json
+          query_params: Json
+          body: string
+          size_bytes: number
+        }
+        Insert: {
+          id?: string
+          endpoint_id: string
+          owner_id: string
+          received_at?: string
+          content_type: string
+          headers?: Json
+          query_params?: Json
+          body: string
+          size_bytes: number
+        }
+        Update: {
+          id?: string
+          endpoint_id?: string
+          owner_id?: string
+          received_at?: string
+          content_type?: string
+          headers?: Json
+          query_params?: Json
+          body?: string
+          size_bytes?: number
+        }
+        Relationships: [{
+          foreignKeyName: "webhook_events_endpoint_id_fkey"
+          columns: ["endpoint_id"]
+          isOneToOne: false
+          referencedRelation: "webhook_endpoints"
+          referencedColumns: ["id"]
+        }]
+      }
+
       app_settings: {
         Row: {
           created_at: string
