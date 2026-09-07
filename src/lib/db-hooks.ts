@@ -82,10 +82,19 @@ export function useList<T = any>(
     queryKey: options?.key ?? [table, options?.filter?.toString(), options?.orderBy],
     enabled: options?.enabled ?? true,
     queryFn: async () => {
-      let q: any = (supabase as any).from(table).select("*");
-      if (options?.filter) q = options.filter(q);
-      q = q.order(options?.orderBy ?? "created_at", { ascending: options?.ascending ?? false });
-      const { data, error } = await q;
+      const build = (withOrder: boolean) => {
+        let q: any = (supabase as any).from(table).select("*");
+        if (options?.filter) q = options.filter(q);
+        if (withOrder)
+          q = q.order(options?.orderBy ?? "created_at", { ascending: options?.ascending ?? false });
+        return q;
+      };
+      let { data, error } = await build(true);
+      // Some tables (junction tables, stocks) have no created_at column:
+      // retry without ordering instead of failing silently.
+      if (error && !options?.orderBy) {
+        ({ data, error } = await build(false));
+      }
       if (error) throw error;
       return (data ?? []) as T[];
     },
