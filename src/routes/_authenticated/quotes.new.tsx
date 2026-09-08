@@ -1477,6 +1477,29 @@ function NewQuote() {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-4">
                   <div>
+                    <Label>Motif d'intervention</Label>
+                    <Select value={interventionReason} onValueChange={updateInterventionReason}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard_repair">Réparation hors casse</SelectItem>
+                        <SelectItem value="damage_vandalism">Casse / vandalisme</SelectItem>
+                        <SelectItem value="new_installation">Nouvelle installation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-end gap-2 pb-2">
+                    <Checkbox
+                      id="is-on-call"
+                      checked={isOnCall}
+                      onCheckedChange={(checked) => updateIsOnCall(checked === true)}
+                    />
+                    <Label htmlFor="is-on-call" className="font-normal">
+                      Astreinte
+                    </Label>
+                  </div>
+                  <div>
                     <Label>Heures</Label>
                     <Input
                       type="number"

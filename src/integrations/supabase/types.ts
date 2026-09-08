@@ -2740,6 +2740,11 @@ export type Database = {
       }
       quotes: {
         Row: {
+          sent_at: string | null
+          last_reminded_at: string | null
+          reminder_snoozed_until: string | null
+          reminder_count: number
+          reminder_version: number
           client_id: string
           contract_id: string | null
           created_at: string
@@ -2769,6 +2774,11 @@ export type Database = {
           waste_treatment_fee: number
         }
         Insert: {
+          sent_at?: string | null
+          last_reminded_at?: string | null
+          reminder_snoozed_until?: string | null
+          reminder_count?: number
+          reminder_version?: number
           client_id: string
           contract_id?: string | null
           created_at?: string
@@ -2798,6 +2808,11 @@ export type Database = {
           waste_treatment_fee?: number
         }
         Update: {
+          sent_at?: string | null
+          last_reminded_at?: string | null
+          reminder_snoozed_until?: string | null
+          reminder_count?: number
+          reminder_version?: number
           client_id?: string
           contract_id?: string | null
           created_at?: string
@@ -3829,6 +3844,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      handle_quote_reminder: {
+        Args: { p_quote_id: string; p_action: string; p_expected_version: number }
+        Returns: undefined
+      }
       complete_stock_ticket: {
         Args: { p_actor?: string; p_ticket_id: string }
         Returns: undefined

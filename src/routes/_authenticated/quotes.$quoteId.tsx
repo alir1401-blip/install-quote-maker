@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useOne, useList, useRemove } from "@/lib/db-hooks";
 import { PageHeader } from "@/components/page-header";
+import { QuoteReminderNotice } from "@/components/quote-reminder-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -898,6 +899,8 @@ function QuoteDetail() {
           </div>
         }
       />
+
+      <QuoteReminderNotice quoteId={quoteId} />
 
       {isEditing && (
         <Card className="mb-6 print:hidden">

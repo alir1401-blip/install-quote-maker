@@ -1,18 +1,34 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { DAY_MS, DEFAULT_REMINDER_SETTINGS, getQuoteReminder, parseReminderSettings } from "../src/lib/quote-reminders.ts";
+import {
+  DAY_MS,
+  DEFAULT_REMINDER_SETTINGS,
+  getQuoteReminder,
+  parseReminderSettings,
+} from "../src/lib/quote-reminders.ts";
 
 const sentAt = Date.parse("2026-09-01T10:00:00Z");
 const quote = {
-  status: "envoye", sent_at: new Date(sentAt).toISOString(),
-  last_reminded_at: null, reminder_snoozed_until: null,
+  status: "envoye",
+  sent_at: new Date(sentAt).toISOString(),
+  last_reminded_at: null,
+  reminder_snoozed_until: null,
 };
 const get = (changes = {}, now = sentAt + 7 * DAY_MS, settings = DEFAULT_REMINDER_SETTINGS) =>
   getQuoteReminder({ ...quote, ...changes }, settings, now);
 
 test("only sent quotes become due, in either supported status language", () => {
   for (const status of ["envoye", "sent"]) assert.equal(get({ status }).isDue, true);
-  for (const status of ["draft", "brouillon", "accepted", "accepte", "refused", "refuse", "pieces_commandees", "annule"]) {
+  for (const status of [
+    "draft",
+    "brouillon",
+    "accepted",
+    "accepte",
+    "refused",
+    "refuse",
+    "pieces_commandees",
+    "annule",
+  ]) {
     assert.equal(get({ status }), null);
   }
 });
@@ -37,10 +53,16 @@ test("snooze persists until its deadline without counting a follow-up", () => {
 });
 
 test("resending starts from the new sent timestamp", () => {
-  assert.equal(get({
-    sent_at: new Date(sentAt + 20 * DAY_MS).toISOString(),
-    last_reminded_at: new Date(sentAt + 8 * DAY_MS).toISOString(),
-  }, sentAt + 21 * DAY_MS).isDue, false);
+  assert.equal(
+    get(
+      {
+        sent_at: new Date(sentAt + 20 * DAY_MS).toISOString(),
+        last_reminded_at: new Date(sentAt + 8 * DAY_MS).toISOString(),
+      },
+      sentAt + 21 * DAY_MS,
+    ).isDue,
+    false,
+  );
 });
 
 test("disabled reminders and unavailable delivery dates never become due", () => {
@@ -50,8 +72,19 @@ test("disabled reminders and unavailable delivery dates never become due", () =>
 });
 
 test("settings validate integer bounds and preserve explicit disabling", () => {
-  for (const value of [null, {}, [], { delayDays: 0 }, { delayDays: 366 }, { delayDays: 1.5 }, { delayDays: "7" }]) {
+  for (const value of [
+    null,
+    {},
+    [],
+    { delayDays: 0 },
+    { delayDays: 366 },
+    { delayDays: 1.5 },
+    { delayDays: "7" },
+  ]) {
     assert.equal(parseReminderSettings(value).delayDays, 7);
   }
-  assert.deepEqual(parseReminderSettings({ enabled: false, delayDays: 30 }), { enabled: false, delayDays: 30 });
+  assert.deepEqual(parseReminderSettings({ enabled: false, delayDays: 30 }), {
+    enabled: false,
+    delayDays: 30,
+  });
 });

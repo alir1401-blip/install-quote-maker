@@ -18,6 +18,7 @@ import {
   DoorOpen,
   Library,
   Webhook,
+  BellRing,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const nav = [
   { title: "Webhooks", to: "/webhooks", icon: Webhook },
   { title: "Tableau de bord", to: "/dashboard", icon: LayoutDashboard },
   { title: "Devis", to: "/quotes", icon: FileText },
+  { title: "Relances devis", to: "/quote-reminders", icon: BellRing },
   { title: "Tickets", to: "/tickets", icon: ClipboardList },
   { title: "Clients", to: "/clients", icon: Users },
   { title: "Grands comptes", to: "/grand-accounts", icon: Building2 },

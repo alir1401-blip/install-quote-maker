@@ -21,6 +21,7 @@ import { Route as AuthenticatedGrandAccountsRouteImport } from './routes/_authen
 import { Route as AuthenticatedInstallationsRouteImport } from './routes/_authenticated/installations'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedPartsRouteImport } from './routes/_authenticated/parts'
+import { Route as AuthenticatedQuoteRemindersRouteImport } from './routes/_authenticated/quote-reminders'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSitesRouteImport } from './routes/_authenticated/sites'
 import { Route as AuthenticatedStorageLocationsRouteImport } from './routes/_authenticated/storage-locations'
@@ -101,6 +102,12 @@ const AuthenticatedPartsRoute = AuthenticatedPartsRouteImport.update({
   path: '/parts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedQuoteRemindersRoute =
+  AuthenticatedQuoteRemindersRouteImport.update({
+    id: '/quote-reminders',
+    path: '/quote-reminders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -209,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/installations': typeof AuthenticatedInstallationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/parts': typeof AuthenticatedPartsRoute
+  '/quote-reminders': typeof AuthenticatedQuoteRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage-locations': typeof AuthenticatedStorageLocationsRoute
@@ -239,6 +247,7 @@ export interface FileRoutesByTo {
   '/installations': typeof AuthenticatedInstallationsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/parts': typeof AuthenticatedPartsRoute
+  '/quote-reminders': typeof AuthenticatedQuoteRemindersRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/sites': typeof AuthenticatedSitesRoute
   '/storage-locations': typeof AuthenticatedStorageLocationsRoute
@@ -271,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/installations': typeof AuthenticatedInstallationsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/parts': typeof AuthenticatedPartsRoute
+  '/_authenticated/quote-reminders': typeof AuthenticatedQuoteRemindersRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/sites': typeof AuthenticatedSitesRoute
   '/_authenticated/storage-locations': typeof AuthenticatedStorageLocationsRoute
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/installations'
     | '/orders'
     | '/parts'
+    | '/quote-reminders'
     | '/settings'
     | '/sites'
     | '/storage-locations'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/installations'
     | '/orders'
     | '/parts'
+    | '/quote-reminders'
     | '/settings'
     | '/sites'
     | '/storage-locations'
@@ -364,6 +376,7 @@ export interface FileRouteTypes {
     | '/_authenticated/installations'
     | '/_authenticated/orders'
     | '/_authenticated/parts'
+    | '/_authenticated/quote-reminders'
     | '/_authenticated/settings'
     | '/_authenticated/sites'
     | '/_authenticated/storage-locations'
@@ -474,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/parts'
       fullPath: '/parts'
       preLoaderRoute: typeof AuthenticatedPartsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quote-reminders': {
+      id: '/_authenticated/quote-reminders'
+      path: '/quote-reminders'
+      fullPath: '/quote-reminders'
+      preLoaderRoute: typeof AuthenticatedQuoteRemindersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -634,6 +654,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInstallationsRoute: typeof AuthenticatedInstallationsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedPartsRoute: typeof AuthenticatedPartsRoute
+  AuthenticatedQuoteRemindersRoute: typeof AuthenticatedQuoteRemindersRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSitesRoute: typeof AuthenticatedSitesRoute
   AuthenticatedStorageLocationsRoute: typeof AuthenticatedStorageLocationsRoute
@@ -660,6 +681,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInstallationsRoute: AuthenticatedInstallationsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedPartsRoute: AuthenticatedPartsRoute,
+  AuthenticatedQuoteRemindersRoute: AuthenticatedQuoteRemindersRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSitesRoute: AuthenticatedSitesRoute,
   AuthenticatedStorageLocationsRoute: AuthenticatedStorageLocationsRoute,
