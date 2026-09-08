@@ -39,6 +39,7 @@ import { Route as AuthenticatedStockTicketsLocationIdRouteImport } from './route
 import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers.$supplierId'
 import { Route as AuthenticatedTicketTicketSlugRouteImport } from './routes/_authenticated/ticket.$ticketSlug'
 import { Route as ApiWebhooksTokenRouteImport } from './routes/api.webhooks.$token'
+import { Route as ApiImportsInstallationsTokenRouteImport } from './routes/api.imports.installations.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -203,6 +204,12 @@ const ApiWebhooksTokenRoute = ApiWebhooksTokenRouteImport.update({
   path: '/api/webhooks/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiImportsInstallationsTokenRoute =
+  ApiImportsInstallationsTokenRouteImport.update({
+    id: '/api/imports/installations/$token',
+    path: '/api/imports/installations/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes/': typeof AuthenticatedQuotesIndexRoute
+  '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -265,6 +273,7 @@ export interface FileRoutesByTo {
   '/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes': typeof AuthenticatedQuotesIndexRoute
+  '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -298,6 +307,7 @@ export interface FileRoutesById {
   '/_authenticated/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/_authenticated/quotes/': typeof AuthenticatedQuotesIndexRoute
+  '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/ticket/$ticketSlug'
     | '/api/webhooks/$token'
     | '/quotes/'
+    | '/api/imports/installations/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/ticket/$ticketSlug'
     | '/api/webhooks/$token'
     | '/quotes'
+    | '/api/imports/installations/$token'
   id:
     | '__root__'
     | '/'
@@ -394,6 +406,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ticket/$ticketSlug'
     | '/api/webhooks/$token'
     | '/_authenticated/quotes/'
+    | '/api/imports/installations/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -401,6 +414,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiWebhooksTokenRoute: typeof ApiWebhooksTokenRoute
+  ApiImportsInstallationsTokenRoute: typeof ApiImportsInstallationsTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -615,6 +629,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/imports/installations/$token': {
+      id: '/api/imports/installations/$token'
+      path: '/api/imports/installations/$token'
+      fullPath: '/api/imports/installations/$token'
+      preLoaderRoute: typeof ApiImportsInstallationsTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -708,6 +729,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiWebhooksTokenRoute: ApiWebhooksTokenRoute,
+  ApiImportsInstallationsTokenRoute: ApiImportsInstallationsTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

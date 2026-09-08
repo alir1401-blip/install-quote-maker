@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, Loader2, RefreshCw, Send, Webhook } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, EmptyState } from "@/components/page-header";
+import { InstallationImportCard } from "@/components/installation-import-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -207,6 +208,10 @@ function WebhooksPage() {
 
       {endpoint.data && (
         <>
+          <InstallationImportCard
+            endpoint={endpoint.data}
+            onChange={() => queryClient.invalidateQueries({ queryKey: endpointKey })}
+          />
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold">Messages reçus</h2>
             <span className="text-xs text-muted-foreground">

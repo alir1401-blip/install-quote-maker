@@ -15,9 +15,9 @@ export type Database = {
   public: {
     Tables: {
       webhook_endpoints: {
-        Row: { id: string; owner_id: string; token: string; created_at: string }
-        Insert: { id?: string; owner_id: string; token?: string; created_at?: string }
-        Update: { id?: string; owner_id?: string; token?: string; created_at?: string }
+        Row: { id: string; owner_id: string; token: string; created_at: string; import_enabled: boolean }
+        Insert: { id?: string; owner_id: string; token?: string; created_at?: string; import_enabled?: boolean }
+        Update: { id?: string; owner_id?: string; token?: string; created_at?: string; import_enabled?: boolean }
         Relationships: []
       }
       webhook_events: {
