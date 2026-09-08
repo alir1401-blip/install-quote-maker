@@ -8,15 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Boxes, CheckCircle2, ChevronLeft, Circle, Plus, Trash2, Wand2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Boxes,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronsUpDown,
+  Circle,
+  Plus,
+  Trash2,
+  Wand2,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { calculateInstallationQuote } from "@/lib/erp/installation-calculator";
 import type { CalculationLog } from "@/lib/erp/types";
 
 export const Route = createFileRoute("/_authenticated/quotes/new")({
   component: NewQuote,
 });
+
+// Radix Select interdit la valeur "" pour un item : ce jeton représente
+// « aucune sélection » et est reconverti en "" dans les handlers.
+const UNSELECTED = "__unselected__";
+
+// Partagé entre l'en-tête et chaque ligne pour que les colonnes restent alignées.
+const ITEM_ROW_GRID = "grid gap-2 sm:grid-cols-[1fr_120px_120px_80px_90px_100px_100px_40px]";
 
 interface Item {
   key: string;
@@ -914,45 +942,53 @@ function NewQuote() {
             <CardContent className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>Client *</Label>
-                <select
-                  value={clientId}
-                  onChange={(e) => {
-                    setClientId(e.target.value);
+                <Select
+                  value={clientId || UNSELECTED}
+                  onValueChange={(value) => {
+                    setClientId(value === UNSELECTED ? "" : value);
                     setSiteId("");
                     setInstallationIds([]);
                     setTargetInstallationId("");
                     setSelectedPartTypes([]);
                   }}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                 >
-                  <option value="">—</option>
-                  {clients.map((c: any) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="—" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNSELECTED}>—</SelectItem>
+                    {clients.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label>Site</Label>
-                <select
-                  value={siteId}
-                  onChange={(e) => {
-                    setSiteId(e.target.value);
+                <Select
+                  value={siteId || UNSELECTED}
+                  onValueChange={(value) => {
+                    setSiteId(value === UNSELECTED ? "" : value);
                     setInstallationIds([]);
                     setTargetInstallationId("");
                     setSelectedPartTypes([]);
                   }}
                   disabled={!clientId}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                 >
-                  <option value="">—</option>
-                  {clientSites.map((s: any) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="—" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNSELECTED}>—</SelectItem>
+                    {clientSites.map((s: any) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label>Installations</Label>
@@ -962,12 +998,17 @@ function NewQuote() {
                   ) : (
                     siteInstalls.map((i: any) => {
                       const checked = installationIds.includes(i.id);
+                      const inputId = `installation-${i.id}`;
                       return (
-                        <label key={i.id} className="flex items-center gap-2 text-sm">
-                          <input
-                            type="checkbox"
+                        <Label
+                          key={i.id}
+                          htmlFor={inputId}
+                          className="flex items-center gap-2 text-sm font-normal"
+                        >
+                          <Checkbox
+                            id={inputId}
                             checked={checked}
-                            onChange={() => {
+                            onCheckedChange={() => {
                               setInstallationIds((current) =>
                                 checked ? current.filter((id) => id !== i.id) : [...current, i.id],
                               );
@@ -981,7 +1022,7 @@ function NewQuote() {
                             disabled={!siteId}
                           />
                           <span>{i.name}</span>
-                        </label>
+                        </Label>
                       );
                     })
                   )}
@@ -989,20 +1030,24 @@ function NewQuote() {
               </div>
               <div>
                 <Label>Contrat appliqué</Label>
-                <select
-                  value={contractId}
-                  onChange={(e) =>
-                    applyContract(contracts.find((c: any) => c.id === e.target.value))
+                <Select
+                  value={contractId || UNSELECTED}
+                  onValueChange={(value) =>
+                    applyContract(contracts.find((c: any) => c.id === value))
                   }
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                 >
-                  <option value="">Aucun</option>
-                  {contracts.map((c: any) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Aucun" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNSELECTED}>Aucun</SelectItem>
+                    {contracts.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -1022,20 +1067,24 @@ function NewQuote() {
               {installationIds.length > 1 && (
                 <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
                   <Label>Installation cible pour les pièces ajoutées</Label>
-                  <select
+                  <Select
                     value={activeInstallationId}
-                    onChange={(e) => {
-                      setTargetInstallationId(e.target.value);
+                    onValueChange={(value) => {
+                      setTargetInstallationId(value);
                       setSelectedPartTypes([]);
                     }}
-                    className="mt-2 flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
                   >
-                    {selectedInstallations.map((row: any) => (
-                      <option key={row.id} value={row.id}>
-                        {row.name || row.installation_number || "Installation"}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="mt-2 bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedInstallations.map((row: any) => (
+                        <SelectItem key={row.id} value={row.id}>
+                          {row.name || row.installation_number || "Installation"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <p className="mt-2 text-xs text-muted-foreground">
                     Les pièces, kits, accessoires et lignes générées seront rattachés à cette
                     installation du devis multi-installations.
@@ -1049,17 +1098,19 @@ function NewQuote() {
                     Types de pièces à remplacer
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {availablePartTypes.map((type) => {
+                    {availablePartTypes.map((type, index) => {
                       const checked = selectedPartTypes.includes(type);
+                      const inputId = `part-type-${index}`;
                       return (
-                        <label
+                        <Label
                           key={type}
-                          className="flex items-center gap-2 rounded-md border border-border/60 px-3 py-2 text-sm hover:bg-accent"
+                          htmlFor={inputId}
+                          className="flex items-center gap-2 rounded-md border border-border/60 px-3 py-2 text-sm font-normal hover:bg-accent"
                         >
-                          <input
-                            type="checkbox"
+                          <Checkbox
+                            id={inputId}
                             checked={checked}
-                            onChange={() =>
+                            onCheckedChange={() =>
                               setSelectedPartTypes((current) =>
                                 checked
                                   ? current.filter((name) => name !== type)
@@ -1068,7 +1119,7 @@ function NewQuote() {
                             }
                           />
                           <span>{type}</span>
-                        </label>
+                        </Label>
                       );
                     })}
                   </div>
@@ -1079,67 +1130,57 @@ function NewQuote() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      addPart(e.target.value);
-                      e.target.value = "";
-                    }
-                  }}
-                  className="flex h-9 flex-1 min-w-[200px] rounded-md border border-input bg-transparent px-3 text-sm"
-                >
-                  <option value="">+ Ajouter une pièce présente / compatible</option>
-                  {compatibleParts.map((p: any) => {
+              <div className="flex flex-wrap items-center gap-2">
+                <PartPicker
+                  className="flex-1 min-w-[240px]"
+                  placeholder="+ Ajouter une pièce présente / compatible"
+                  emptyMessage="Aucune pièce compatible."
+                  items={compatibleParts.map((p: any) => {
                     const replacement = p.is_obsolete
                       ? parts.find((part: any) => part.id === p.replacement_part_id)
                       : null;
                     const displayedPart = replacement ?? p;
-                    return (
-                      <option key={p.id} value={p.id} disabled={p.is_obsolete && !replacement}>
-                        {presentPartIds.has(p.id) ? "✓ " : ""}
-                        {p.is_obsolete && replacement
-                          ? `${p.name} (obsolète → ${replacement.name})`
-                          : p.is_obsolete
-                            ? `${p.name} (obsolète sans remplacement)`
-                            : p.name}{" "}
-                        — {Number(displayedPart.sale_price).toFixed(2)}€/
-                        {displayedPart.pricing_unit === "linear_meter" ? "ml" : "u"}
-                      </option>
-                    );
+                    const label = `${presentPartIds.has(p.id) ? "✓ " : ""}${
+                      p.is_obsolete && replacement
+                        ? `${p.name} (obsolète → ${replacement.name})`
+                        : p.is_obsolete
+                          ? `${p.name} (obsolète sans remplacement)`
+                          : p.name
+                    } — ${Number(displayedPart.sale_price).toFixed(2)}€/${
+                      displayedPart.pricing_unit === "linear_meter" ? "ml" : "u"
+                    }`;
+                    return {
+                      id: p.id,
+                      label,
+                      search: `${p.name} ${p.reference ?? ""}`,
+                      disabled: p.is_obsolete && !replacement,
+                    };
                   })}
-                </select>
+                  onSelect={addPart}
+                />
                 {kits.length > 0 && (
-                  <select
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        addPart(e.target.value);
-                        e.target.value = "";
-                      }
-                    }}
-                    className="flex h-9 min-w-[180px] rounded-md border border-input bg-transparent px-3 text-sm"
-                  >
-                    <option value="">+ Ajouter un kit</option>
-                    {kits.map((kit: any) => {
+                  <PartPicker
+                    className="min-w-[220px]"
+                    placeholder="+ Ajouter un kit"
+                    emptyMessage="Aucun kit."
+                    items={kits.map((kit: any) => {
                       const negotiatedPrice = contractId
                         ? contractKitPrices.find(
                             (row: any) =>
                               row.contract_id === contractId && row.kit_part_id === kit.id,
                           )
                         : null;
-                      return (
-                        <option key={kit.id} value={kit.id}>
-                          {kit.name} —{" "}
-                          {Number(negotiatedPrice?.negotiated_price ?? kit.sale_price).toFixed(2)}€
-                          {negotiatedPrice ? " contrat" : " lot"}
-                        </option>
-                      );
+                      return {
+                        id: kit.id,
+                        label: `${kit.name} — ${Number(negotiatedPrice?.negotiated_price ?? kit.sale_price).toFixed(2)}€${negotiatedPrice ? " contrat" : " lot"}`,
+                        search: kit.name,
+                      };
                     })}
-                  </select>
+                    onSelect={addPart}
+                  />
                 )}
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant="default"
                   onClick={autoCalculateInstallation}
                   disabled={installationIds.length === 0}
                 >
@@ -1148,13 +1189,12 @@ function NewQuote() {
                 </Button>
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={addPresentParts}
                   disabled={installationIds.length === 0 || presentPartIds.size === 0}
                 >
                   Ajouter présentes
                 </Button>
-                <Button variant="outline" size="sm" onClick={addFree}>
+                <Button variant="ghost" onClick={addFree}>
                   <Plus className="mr-1 h-4 w-4" />
                   Ligne libre
                 </Button>
@@ -1203,6 +1243,23 @@ function NewQuote() {
                   remplacer pour afficher les références compatibles, ou créez une ligne libre.
                 </div>
               )}
+              {items.length > 0 && (
+                <div
+                  className={cn(
+                    ITEM_ROW_GRID,
+                    "hidden px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:grid",
+                  )}
+                >
+                  <span>Description</span>
+                  <span>Référence</span>
+                  <span>Type</span>
+                  <span>Qté</span>
+                  <span>Long. ml</span>
+                  <span>PU HT</span>
+                  <span>Coût</span>
+                  <span aria-hidden="true" />
+                </div>
+              )}
               {items.map((i) => {
                 const equivalenceSuggestion = getEquivalenceSuggestion(i);
                 const hasBetterEquivalence = Number(equivalenceSuggestion?.marginGain ?? 0) > 0.01;
@@ -1215,7 +1272,7 @@ function NewQuote() {
                         : "border-border/60"
                     }`}
                   >
-                    <div className="grid gap-2 sm:grid-cols-[1fr_120px_120px_80px_90px_100px_100px_40px] sm:items-center">
+                    <div className={cn(ITEM_ROW_GRID, "sm:items-center")}>
                       <Input
                         value={i.description}
                         onChange={(e) => update(i.key, { description: e.target.value })}
@@ -1227,19 +1284,25 @@ function NewQuote() {
                         placeholder="Référence"
                         disabled={Boolean(i.part_id)}
                       />
-                      <select
-                        value={i.category ?? ""}
-                        onChange={(e) => update(i.key, { category: e.target.value })}
+                      <Select
+                        value={i.category || UNSELECTED}
+                        onValueChange={(value) =>
+                          update(i.key, { category: value === UNSELECTED ? "" : value })
+                        }
                         disabled={Boolean(i.part_id)}
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                       >
-                        <option value="">Type</option>
-                        {partCategories.map((category: any) => (
-                          <option key={category.id} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={UNSELECTED}>Type</SelectItem>
+                          {partCategories.map((category: any) => (
+                            <SelectItem key={category.id} value={category.name}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <Input
                         type="number"
                         step="0.01"
@@ -1248,7 +1311,7 @@ function NewQuote() {
                         placeholder={i.pricing_unit === "linear_meter" ? "ml" : "Qté"}
                         title={i.pricing_unit === "linear_meter" ? "Mètres linéaires" : "Quantité"}
                       />
-                      {i.pricing_unit === "linear_meter" && (
+                      {i.pricing_unit === "linear_meter" ? (
                         <Input
                           type="number"
                           step="0.01"
@@ -1258,6 +1321,8 @@ function NewQuote() {
                           placeholder="Long. ml"
                           title="Longueur unitaire en mètres linéaires"
                         />
+                      ) : (
+                        <div aria-hidden="true" />
                       )}
                       <Input
                         type="number"
@@ -1348,25 +1413,39 @@ function NewQuote() {
                       </div>
                     )}
                     {!i.part_id && installation?.model_id && (
-                      <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                        <input
-                          type="checkbox"
+                      <div className="mt-2 flex items-center gap-2">
+                        <Checkbox
+                          id={`save-as-part-${i.key}`}
                           checked={Boolean(i.save_as_part)}
-                          onChange={(e) => update(i.key, { save_as_part: e.target.checked })}
+                          onCheckedChange={(checked) =>
+                            update(i.key, { save_as_part: checked === true })
+                          }
                         />
-                        Enregistrer cette nouvelle pièce et la rendre compatible avec ce modèle de
-                        porte
-                      </label>
+                        <Label
+                          htmlFor={`save-as-part-${i.key}`}
+                          className="text-xs font-normal text-muted-foreground"
+                        >
+                          Enregistrer cette nouvelle pièce et la rendre compatible avec ce modèle de
+                          porte
+                        </Label>
+                      </div>
                     )}
                     {!i.part_id && (
-                      <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                        <input
-                          type="checkbox"
+                      <div className="mt-2 flex items-center gap-2">
+                        <Checkbox
+                          id={`is-oversized-${i.key}`}
                           checked={Boolean(i.is_oversized)}
-                          onChange={(e) => update(i.key, { is_oversized: e.target.checked })}
+                          onCheckedChange={(checked) =>
+                            update(i.key, { is_oversized: checked === true })
+                          }
                         />
-                        Pièce hors gabarit
-                      </label>
+                        <Label
+                          htmlFor={`is-oversized-${i.key}`}
+                          className="text-xs font-normal text-muted-foreground"
+                        >
+                          Pièce hors gabarit
+                        </Label>
+                      </div>
                     )}
                     {selectedGrandAccount && i.part_id && (
                       <div className="mt-2 text-xs text-emerald-700">
@@ -1391,99 +1470,117 @@ function NewQuote() {
             <CardHeader>
               <CardTitle className="text-base">3. Main-d'œuvre & déplacement</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-3 sm:grid-cols-4">
+            <CardContent className="space-y-5">
               <div>
-                <Label>Heures</Label>
-                <Input
-                  type="number"
-                  step="0.25"
-                  value={laborHours}
-                  onChange={(e) => setLaborHours(Number(e.target.value))}
-                />
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Intervention
+                </div>
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <div>
+                    <Label>Heures</Label>
+                    <Input
+                      type="number"
+                      step="0.25"
+                      value={laborHours}
+                      onChange={(e) => setLaborHours(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Nombre de déplacements</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={travelCount}
+                      onChange={(e) => setTravelCount(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Tarif €/h/technicien</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={laborRate}
+                      onChange={(e) => setLaborRate(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Déplacement €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={travelFee}
+                      onChange={(e) => setTravelFee(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>TVA %</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={vatRate}
+                      onChange={(e) => setVatRate(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
               </div>
+
+              <div className="border-t border-border/60" />
+
               <div>
-                <Label>Nombre de déplacements</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={travelCount}
-                  onChange={(e) => setTravelCount(Number(e.target.value))}
-                />
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Frais additionnels
+                </div>
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <div>
+                    <Label>Frais de port €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={shippingFee}
+                      onChange={(e) => setShippingFee(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Traitement déchets €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={wasteTreatmentFee}
+                      onChange={(e) => setWasteTreatmentFee(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Frais de port hors gabarit €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={oversizedShippingFee}
+                      onChange={(e) => setOversizedShippingFee(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Évacuation déchetterie €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={dumpEvacuationFee}
+                      onChange={(e) => setDumpEvacuationFee(Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Engin de levage €</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={liftingEquipmentFee}
+                      onChange={(e) => setLiftingEquipmentFee(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
               </div>
+
               <div>
-                <Label>Tarif €/h/technicien</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={laborRate}
-                  onChange={(e) => setLaborRate(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Déplacement €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={travelFee}
-                  onChange={(e) => setTravelFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Frais de port €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={shippingFee}
-                  onChange={(e) => setShippingFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Traitement déchets €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={wasteTreatmentFee}
-                  onChange={(e) => setWasteTreatmentFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Frais de port hors gabarit €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={oversizedShippingFee}
-                  onChange={(e) => setOversizedShippingFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Évacuation déchetterie €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={dumpEvacuationFee}
-                  onChange={(e) => setDumpEvacuationFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Engin de levage €</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={liftingEquipmentFee}
-                  onChange={(e) => setLiftingEquipmentFee(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>TVA %</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={vatRate}
-                  onChange={(e) => setVatRate(Number(e.target.value))}
-                />
-              </div>
-              <div className="sm:col-span-4">
                 <Label>Notes</Label>
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
               </div>
@@ -1597,5 +1694,65 @@ function Row({
       <span>{label}</span>
       <span>{value.toFixed(2)} €</span>
     </div>
+  );
+}
+
+type PickerItem = { id: string; label: string; search: string; disabled?: boolean };
+
+function PartPicker({
+  items,
+  onSelect,
+  placeholder,
+  emptyMessage = "Aucun résultat.",
+  disabled,
+  className,
+}: {
+  items: PickerItem[];
+  onSelect: (id: string) => void;
+  placeholder: string;
+  emptyMessage?: string;
+  disabled?: boolean;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          disabled={disabled || items.length === 0}
+          className={cn("justify-between font-normal text-muted-foreground", className)}
+        >
+          <span className="truncate">{placeholder}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Rechercher par nom ou référence..." />
+          <CommandList>
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            <CommandGroup>
+              {items.map((item) => (
+                <CommandItem
+                  key={item.id}
+                  value={`${item.id} ${item.search}`}
+                  disabled={item.disabled}
+                  onSelect={() => {
+                    onSelect(item.id);
+                    setOpen(false);
+                  }}
+                >
+                  {item.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
