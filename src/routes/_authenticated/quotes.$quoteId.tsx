@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useOne, useList, useRemove } from "@/lib/db-hooks";
 import { PageHeader } from "@/components/page-header";
+import { QuoteWebhookButton } from "@/components/quote-webhook-button";
 import { QuoteReminderNotice } from "@/components/quote-reminder-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -888,6 +889,7 @@ function QuoteDetail() {
                 </Button>
               </>
             )}
+            <QuoteWebhookButton quoteId={quoteId} disabled={isEditing || saving} />
             <Button variant="outline" onClick={() => window.print()}>
               <Printer className="mr-2 h-4 w-4" />
               Imprimer / PDF

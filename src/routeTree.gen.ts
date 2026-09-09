@@ -40,6 +40,8 @@ import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_
 import { Route as AuthenticatedTicketTicketSlugRouteImport } from './routes/_authenticated/ticket.$ticketSlug'
 import { Route as ApiWebhooksTokenRouteImport } from './routes/api.webhooks.$token'
 import { Route as ApiImportsInstallationsTokenRouteImport } from './routes/api.imports.installations.$token'
+import { Route as ApiQuotesQuoteIdWebhookRouteImport } from './routes/api.quotes.$quoteId.webhook'
+import { Route as ApiWebhooksTicketsTokenRouteImport } from './routes/api.webhooks.tickets.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -210,6 +212,16 @@ const ApiImportsInstallationsTokenRoute =
     path: '/api/imports/installations/$token',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiQuotesQuoteIdWebhookRoute = ApiQuotesQuoteIdWebhookRouteImport.update({
+  id: '/api/quotes/$quoteId/webhook',
+  path: '/api/quotes/$quoteId/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksTicketsTokenRoute = ApiWebhooksTicketsTokenRouteImport.update({
+  id: '/api/webhooks/tickets/$token',
+  path: '/api/webhooks/tickets/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -242,6 +254,8 @@ export interface FileRoutesByFullPath {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
+  '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -274,6 +288,8 @@ export interface FileRoutesByTo {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
+  '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -308,6 +324,8 @@ export interface FileRoutesById {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/_authenticated/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
+  '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -342,6 +360,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/quotes/'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/webhook'
+    | '/api/webhooks/tickets/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -374,6 +394,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/quotes'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/webhook'
+    | '/api/webhooks/tickets/$token'
   id:
     | '__root__'
     | '/'
@@ -407,6 +429,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/_authenticated/quotes/'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/webhook'
+    | '/api/webhooks/tickets/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -415,6 +439,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiWebhooksTokenRoute: typeof ApiWebhooksTokenRoute
   ApiImportsInstallationsTokenRoute: typeof ApiImportsInstallationsTokenRoute
+  ApiQuotesQuoteIdWebhookRoute: typeof ApiQuotesQuoteIdWebhookRoute
+  ApiWebhooksTicketsTokenRoute: typeof ApiWebhooksTicketsTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -636,6 +662,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiImportsInstallationsTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/quotes/$quoteId/webhook': {
+      id: '/api/quotes/$quoteId/webhook'
+      path: '/api/quotes/$quoteId/webhook'
+      fullPath: '/api/quotes/$quoteId/webhook'
+      preLoaderRoute: typeof ApiQuotesQuoteIdWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/tickets/$token': {
+      id: '/api/webhooks/tickets/$token'
+      path: '/api/webhooks/tickets/$token'
+      fullPath: '/api/webhooks/tickets/$token'
+      preLoaderRoute: typeof ApiWebhooksTicketsTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -730,6 +770,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiWebhooksTokenRoute: ApiWebhooksTokenRoute,
   ApiImportsInstallationsTokenRoute: ApiImportsInstallationsTokenRoute,
+  ApiQuotesQuoteIdWebhookRoute: ApiQuotesQuoteIdWebhookRoute,
+  ApiWebhooksTicketsTokenRoute: ApiWebhooksTicketsTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

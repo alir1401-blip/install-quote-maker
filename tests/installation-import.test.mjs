@@ -78,3 +78,37 @@ test("the HTTP pipeline preserves creation flags and IDs in its receipt", async 
   assert.equal(body.installation.created, true);
   assert.equal(body.client.id, entity.id);
 });
+
+test("accepts optional catalogue references, photo and site coordinates", () => {
+  const value = {
+    ...payload,
+    site: { ...payload.site, latitude: 0, longitude: -180 },
+    installation: {
+      ...payload.installation,
+      type: { name: "Porte automatique" },
+      brand: { name: "Marque" },
+      model: { id: "11111111-1111-4111-8111-111111111111" },
+      contract: { name: "Maintenance annuelle", type: "maintenance" },
+      photo_url: "https://example.com/porte.jpg",
+    },
+  };
+  assert.deepEqual(parse(value), value);
+  assert.equal(parse({ ...payload, installation: { ...payload.installation, brand: null } }).installation.brand, null);
+});
+
+test("rejects malformed catalogue references and unsupported contract types", () => {
+  for (const key of ["type", "brand", "model", "contract"]) {
+    for (const value of ["name", {}, { id: "invalid" }, { name: " " }, { name: "x", owner_id: "forged" }]) {
+      rejects({ ...payload, installation: { ...payload.installation, [key]: value } });
+    }
+  }
+  rejects({ ...payload, installation: { ...payload.installation, contract: { name: "x", type: "invalid" } } });
+  rejects({ ...payload, installation: { ...payload.installation, contract: { type: "maintenance" } } });
+});
+
+test("validates coordinate ranges and rejects numeric strings", () => {
+  for (const site of [{ latitude: 91 }, { latitude: -91 }, { longitude: 181 }, { longitude: -181 }, { latitude: "48.8" }]) {
+    rejects({ ...payload, site: { ...payload.site, ...site } });
+  }
+  assert.equal(parse({ ...payload, site: { ...payload.site, latitude: null, longitude: 180 } }).site.longitude, 180);
+});

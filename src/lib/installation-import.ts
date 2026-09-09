@@ -10,6 +10,12 @@ const hasIdentity = (value: { id?: string | null; name?: string | null }) =>
   !!(value.id || value.name);
 const identityMessage = { message: "Indiquez un nom ou un identifiant existant." };
 
+const reference = z.object(identity).strict().refine(hasIdentity, identityMessage);
+const contractReference = z.object({
+  ...identity,
+  type: z.enum(["none", "generic", "framework", "maintenance", "warranty"]).optional(),
+}).strict().refine(hasIdentity, identityMessage);
+
 export const installationImportSchema = z
   .object({
     client: z
@@ -31,6 +37,8 @@ export const installationImportSchema = z
         address: text,
         contact_name: text,
         contact_phone: text,
+        latitude: z.number().min(-90).max(90).nullable().optional(),
+        longitude: z.number().min(-180).max(180).nullable().optional(),
         notes: text,
       })
       .strict()
@@ -38,6 +46,11 @@ export const installationImportSchema = z
     installation: z
       .object({
         ...identity,
+        type: reference.nullable().optional(),
+        brand: reference.nullable().optional(),
+        model: reference.nullable().optional(),
+        contract: contractReference.nullable().optional(),
+        photo_url: text,
         serial_number: text,
         location: text,
         notes: text,

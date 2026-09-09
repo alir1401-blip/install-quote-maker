@@ -4,7 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, Loader2, RefreshCw, Send, Webhook } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, EmptyState } from "@/components/page-header";
+import { QuoteWebhookCard } from "@/components/quote-webhook-card";
 import { InstallationImportCard } from "@/components/installation-import-card";
+import { QuoteTicketImportCard } from "@/components/quote-ticket-import-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -125,7 +127,7 @@ function WebhooksPage() {
     <div className="space-y-6">
       <PageHeader
         title="Webhooks"
-        description="Recevez les messages de vos outils et consultez leur contenu."
+        description="Recevez les messages de vos outils et envoyez vos devis par webhook."
         actions={
           <Button
             variant="outline"
@@ -206,9 +208,15 @@ function WebhooksPage() {
         </CardContent>
       </Card>
 
+      <QuoteWebhookCard ownerId={user.id} />
+
       {endpoint.data && (
         <>
           <InstallationImportCard
+            endpoint={endpoint.data}
+            onChange={() => queryClient.invalidateQueries({ queryKey: endpointKey })}
+          />
+          <QuoteTicketImportCard
             endpoint={endpoint.data}
             onChange={() => queryClient.invalidateQueries({ queryKey: endpointKey })}
           />

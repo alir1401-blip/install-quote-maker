@@ -10,10 +10,17 @@ import { Switch } from "@/components/ui/switch";
 
 const example = {
   client: { name: "Société Dupont", email: "contact@example.com" },
-  site: { name: "Agence Paris", address: "10 rue de Paris, 75001 Paris" },
+  site: { name: "Agence Paris", address: "10 rue de Paris, 75001 Paris", latitude: 48.8566, longitude: 2.3522 },
   installation: {
     name: "Porte entrée principale",
+    type: { name: "Porte automatique" },
+    brand: { name: "Marque du catalogue" },
+    model: { name: "Modèle du catalogue" },
+    contract: { name: "Maintenance annuelle", type: "maintenance" },
     serial_number: "PORTE-001",
+    year: 2024,
+    photo_url: "https://example.com/porte.jpg",
+    characteristics: { largeur_mm: 1200 },
     location: "Accueil",
   },
 };
@@ -117,6 +124,19 @@ export function InstallationImportCard({
               {'{ "id": "UUID de la fiche" }'}. Sinon, le nom est recherché dans votre compte, dans
               le client pour un site, puis dans le site pour une installation. Les majuscules et
               espaces superflus sont ignorés. Un nom ambigu nécessite un identifiant.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Champs optionnels du site : email, address, contact_name, contact_phone, notes,
+              latitude (−90 à 90) et longitude (−180 à 180). Pour l’installation : serial_number,
+              year, location, photo_url, notes, characteristics, type, brand, model et contract.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              type, brand, model et contract acceptent un objet avec name ou id. Ces références
+              doivent déjà exister dans votre catalogue ; adaptez les noms de l’exemple ou retirez
+              ces champs. Le modèle doit correspondre à la marque et au type ; sa marque et son
+              type sont repris lorsqu’ils sont omis. Le contrat doit être global ou appartenir au
+              client. Son champ type est un filtre facultatif : none, generic, framework,
+              maintenance ou warranty. Il ne crée ni ne modifie un contrat.
             </p>
             <p className="text-xs text-muted-foreground">
               La réponse contient client, site et installation avec id, number et created (true si
