@@ -59,6 +59,10 @@ ticket.
 Rejouer la même requête (même `ticket.id`) réutilise le ticket déjà créé plutôt que d'en créer
 un second.
 
+`ticket.id` et `ticket.number` reçus sont conservés sur le ticket créé. Quand le devis issu de
+ce ticket est envoyé par webhook, `quote.ticket_id` contient le `ticket.number` reçu (à défaut,
+le `ticket.id`), afin que l'outil terrain rattache le devis au bon ticket.
+
 Erreurs : 400 (JSON/évènement invalide), 403 (création désactivée), 404 (URL ou référence
 introuvable), 409 (nom ambigu ou conflit concurrent), 413 (taille), 415 (type de contenu), 429
 (quota partagé de 60 requêtes réussies/minute avec les autres webhooks), 503

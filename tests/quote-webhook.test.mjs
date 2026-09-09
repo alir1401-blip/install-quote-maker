@@ -61,15 +61,36 @@ test("exports all saved data and totals with linear metres, labour, fees and VAT
   assert.equal(snapshot.items[0].total_ht, undefined);
 });
 test("quote.ticket_id carries the source ticket of an imported ticket, not our internal id", () => {
-  const imported = {
-    ...snapshot,
-    quote: { ...snapshot.quote, ticket_id: "internal-uuid" },
-    tickets: [
+  const withTickets = (tickets) =>
+    buildQuoteWebhookPayload(
+      { ...snapshot, quote: { ...snapshot.quote, ticket_id: "internal-uuid" }, tickets },
+      "e",
+      "now",
+    ).quote.ticket_id;
+  // The number the field-service tool sent wins; its id is the fallback for older imports.
+  assert.equal(
+    withTickets([
       { id: "local", external_source: null, external_ref: null },
-      { id: "local-2", external_source: "field_service", external_ref: "T-1042-ext" },
-    ],
-  };
-  assert.equal(buildQuoteWebhookPayload(imported, "e", "now").quote.ticket_id, "T-1042-ext");
+      {
+        id: "local-2",
+        external_source: "field_service",
+        external_ref: "uuid-ext",
+        external_number: "T-1042",
+      },
+    ]),
+    "T-1042",
+  );
+  assert.equal(
+    withTickets([
+      {
+        id: "local-2",
+        external_source: "field_service",
+        external_ref: "uuid-ext",
+        external_number: null,
+      },
+    ]),
+    "uuid-ext",
+  );
   // Quotes created in the app keep their own reference, and null stays null.
   assert.equal(
     buildQuoteWebhookPayload(
