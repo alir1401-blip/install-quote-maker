@@ -1,24 +1,27 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Webhook } from "lucide-react";
+import { Eye, EyeOff, Send, Webhook } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   QUOTE_WEBHOOK_KEY,
   QUOTE_WEBHOOK_EVENTS,
+  QUOTE_WEBHOOK_DEFAULTS,
   validateQuoteWebhookUrl,
 } from "@/lib/quote-webhook";
+import { FIELD_SERVICE_QUOTE_EVENTS } from "@/lib/field-service-quote-return";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
-type Config = { url: string; enabled: boolean };
+type Config = { url: string; enabled: boolean; apikey: string; secret: string };
 export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Config | null>(null);
+  const [reveal, setReveal] = useState(false);
   const configKey = ["quote-webhook-config", ownerId];
   const config = useQuery({
     queryKey: configKey,
@@ -31,18 +34,23 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
         .maybeSingle();
       if (error) throw error;
       const value = data?.value as Partial<Config> | undefined;
+      // An account that never saved anything starts on the field-service defaults.
       return {
-        url: typeof value?.url === "string" ? value.url : "",
+        url: typeof value?.url === "string" ? value.url : QUOTE_WEBHOOK_DEFAULTS.url,
+        apikey: typeof value?.apikey === "string" ? value.apikey : QUOTE_WEBHOOK_DEFAULTS.apikey,
+        secret: typeof value?.secret === "string" ? value.secret : QUOTE_WEBHOOK_DEFAULTS.secret,
         enabled: value?.enabled === true,
       };
     },
   });
-  const current = draft ?? config.data ?? { url: "", enabled: false };
+  const current = draft ?? config.data ?? { ...QUOTE_WEBHOOK_DEFAULTS, enabled: false };
   const save = useMutation({
     mutationFn: async () => {
       const value = {
         ...current,
         url: current.url.trim() ? validateQuoteWebhookUrl(current.url) : "",
+        apikey: current.apikey.trim(),
+        secret: current.secret.trim(),
       };
       if (value.enabled && !value.url)
         throw new Error("Indiquez l’URL de destination avant d’activer l’envoi.");
@@ -62,6 +70,23 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
     },
     onError: (error) => toast.error(error.message),
   });
+  const sendTest = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session) throw new Error("Connectez-vous pour envoyer un test.");
+      const response = await fetch("/api/quotes/webhook-test", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.delivered)
+        throw new Error(result?.error || "Test non confirmé par le destinataire.");
+      return result;
+    },
+    onSuccess: (result) => toast.success(`Test reçu (HTTP ${result.http_status}).`),
+    onError: (error) => toast.error(error.message),
+    retry: false,
+  });
   const history = useQuery({
     queryKey: ["quote-webhook-history", ownerId],
     queryFn: async () => {
@@ -69,7 +94,7 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
         .from("history_events")
         .select("id, created_at, event_type, description, metadata")
         .eq("owner_id", ownerId)
-        .in("event_type", QUOTE_WEBHOOK_EVENTS)
+        .in("event_type", [...QUOTE_WEBHOOK_EVENTS, ...FIELD_SERVICE_QUOTE_EVENTS])
         .order("created_at", { ascending: false })
         .limit(20);
       if (error) throw error;
@@ -88,6 +113,9 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
         <p className="text-sm text-muted-foreground">
           Enregistrez l’adresse de votre outil, puis cliquez sur « Envoyer au webhook » dans un
           devis. Chaque clic envoie sa version enregistrée et crée une tentative dans l’historique.
+          Les valeurs par défaut visent l’outil terrain qui envoie les tickets ; elles restent
+          modifiables. « Envoyer un test » poste un devis fictif à cette adresse pour vérifier
+          l’URL, l’apikey et le secret sans toucher à un vrai devis.
         </p>
         {config.isPending ? (
           <p role="status">Chargement…</p>
@@ -113,8 +141,32 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
               placeholder="https://votre-outil.fr/webhook/devis"
               value={current.url}
               disabled={save.isPending}
+              className="font-mono text-xs"
               onChange={(event) => setDraft({ ...current, url: event.target.value })}
             />
+            <Label htmlFor="quote-webhook-apikey">En-tête apikey (optionnel)</Label>
+            <Input
+              id="quote-webhook-apikey"
+              value={current.apikey}
+              disabled={save.isPending}
+              className="font-mono text-xs"
+              onChange={(event) => setDraft({ ...current, apikey: event.target.value })}
+            />
+            <Label htmlFor="quote-webhook-secret">En-tête X-Webhook-Secret</Label>
+            <div className="flex gap-2">
+              <Input
+                id="quote-webhook-secret"
+                type={reveal ? "text" : "password"}
+                placeholder="Secret partagé fourni par le destinataire"
+                value={current.secret}
+                disabled={save.isPending}
+                className="font-mono text-xs"
+                onChange={(event) => setDraft({ ...current, secret: event.target.value })}
+              />
+              <Button type="button" variant="outline" onClick={() => setReveal((v) => !v)}>
+                {reveal ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
             <div className="flex items-center gap-3">
               <Switch
                 id="quote-webhook-enabled"
@@ -124,9 +176,25 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
               />
               <Label htmlFor="quote-webhook-enabled">Activer l’envoi des devis</Label>
             </div>
-            <Button type="submit" disabled={save.isPending}>
-              {save.isPending ? "Enregistrement…" : "Enregistrer"}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit" disabled={save.isPending}>
+                {save.isPending ? "Enregistrement…" : "Enregistrer"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={sendTest.isPending || save.isPending || !!draft}
+                title={
+                  draft
+                    ? "Enregistrez la configuration avant de tester."
+                    : "Envoyer un devis fictif pour vérifier l’URL, l’apikey et le secret"
+                }
+                onClick={() => sendTest.mutate()}
+              >
+                <Send className="mr-2 h-4 w-4" />
+                {sendTest.isPending ? "Envoi du test…" : "Envoyer un test"}
+              </Button>
+            </div>
           </form>
         )}
         <details className="text-sm">
@@ -144,6 +212,13 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
             possède un identifiant dans event_id et l’en-tête X-Webhook-Id. Les redirections et les
             nouvelles tentatives automatiques sont désactivées. L’envoi ne change pas le statut du
             devis.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            En-têtes envoyés : Content-Type: application/json, X-Webhook-Event, X-Webhook-Id, puis
+            apikey et X-Webhook-Secret lorsqu’ils sont renseignés ici. Le devis de test porte test:
+            true et un devis fictif TEST-0000. Pour un devis issu d’un ticket importé, « Envoyer au
+            ticket d’origine » renseigne en plus quote.ticket_id avec l’identifiant du ticket de
+            l’outil terrain.
           </p>
         </details>
         <div className="flex items-center justify-between">
@@ -178,17 +253,21 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
                       {String(meta.quote_number ?? "Devis")}
                     </Link>
                     <span>
-                      {entry.event_type === "quote_webhook_delivered"
+                      {entry.event_type.endsWith("_delivered")
                         ? "Reçu"
-                        : entry.event_type === "quote_webhook_failed"
+                        : entry.event_type.endsWith("_failed")
                           ? "Échec / non confirmé"
                           : "En cours / non confirmé"}
                       {meta.http_status ? ` · HTTP ${meta.http_status}` : ""}
                     </span>
                   </div>
                   <p className="text-muted-foreground">
-                    {new Date(entry.created_at).toLocaleString("fr-FR")} ·{" "}
-                    {String(meta.destination_host ?? "")}
+                    {new Date(entry.created_at).toLocaleString("fr-FR")}
+                    {meta.external_ticket_ref
+                      ? ` · retour ticket ${meta.external_ticket_ref}`
+                      : meta.destination_host
+                        ? ` · ${meta.destination_host}`
+                        : ""}
                   </p>
                   {entry.description && <p>{entry.description}</p>}
                 </li>

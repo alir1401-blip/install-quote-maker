@@ -5,6 +5,17 @@ export const QUOTE_WEBHOOK_EVENTS = [
   "quote_webhook_failed",
 ];
 
+// Defaults target the field-service tool that sends us the tickets; its apikey is a public
+// anon key. Everything stays editable, and the shared secret is never pre-filled.
+export const QUOTE_WEBHOOK_DEFAULTS = {
+  url: "https://snxunodxgbeldliiqlab.supabase.co/rest/v1/rpc/receive_ticket_quote",
+  apikey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueHVub2R4Z2JlbGRsaWlxbGFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTA3OTEsImV4cCI6MjA5NTk2Njc5MX0.FwqbKKCn3PYSsa2eFw0Jt_1EVjS8EAFNWJjEOIZEMQs",
+  secret: "",
+};
+
+export type QuoteWebhookCredentials = { apikey?: string; secret?: string };
+
 export function validateQuoteWebhookUrl(value: string): string {
   let url: URL;
   try {
@@ -98,10 +109,24 @@ export function buildQuoteWebhookPayload(snapshot: QuoteSnapshot, eventId: strin
   };
 }
 
+export function buildQuoteWebhookTestPayload(eventId: string, sentAt: string) {
+  return {
+    event: "quote.exported",
+    schema_version: 1,
+    event_id: eventId,
+    sent_at: sentAt,
+    test: true,
+    currency: "EUR",
+    quote: { quote_number: "TEST-0000", ticket_id: null, status: "brouillon" },
+    items: [],
+    totals: { total_ht: 0, vat_rate: 0, vat_amount: 0, total_ttc: 0 },
+  };
+}
+
 export async function postQuoteWebhook(
   url: string,
-  payload: ReturnType<typeof buildQuoteWebhookPayload>,
-  send: typeof fetch = fetch,
+  payload: { event: string; event_id: string },
+  { apikey, secret, send = fetch }: QuoteWebhookCredentials & { send?: typeof fetch } = {},
 ) {
   const response = await send(validateQuoteWebhookUrl(url), {
     method: "POST",
@@ -109,6 +134,8 @@ export async function postQuoteWebhook(
       "Content-Type": "application/json",
       "X-Webhook-Event": payload.event,
       "X-Webhook-Id": payload.event_id,
+      ...(apikey ? { apikey } : {}),
+      ...(secret ? { "X-Webhook-Secret": secret } : {}),
     },
     body: JSON.stringify(payload),
     redirect: "manual",

@@ -1,47 +1,22 @@
-import { createClient } from "@supabase/supabase-js";
-import {
-  buildFieldServiceQuotePayload,
-  postFieldServiceQuote,
-  FIELD_SERVICE_QUOTE_SECRET_KEY,
-} from "./field-service-quote-return.ts";
-import type { QuoteSnapshot } from "./quote-webhook.ts";
+import { buildFieldServiceQuotePayload } from "./field-service-quote-return.ts";
+import { loadConfig, openSession } from "./quote-webhook.server.ts";
+import { postQuoteWebhook, type QuoteSnapshot } from "./quote-webhook.ts";
 
 const reply = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
 export async function sendFieldServiceQuoteReturn(request: Request, quoteId: string) {
-  const authorization = request.headers.get("Authorization");
-  if (!authorization?.startsWith("Bearer "))
+  // Reject an unauthenticated caller and a malformed id before any network round-trip.
+  if (!request.headers.get("Authorization")?.startsWith("Bearer "))
     return reply({ error: "Connectez-vous pour envoyer le devis." }, 401);
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(quoteId))
     return reply({ error: "Identifiant de devis invalide." }, 400);
-  const url = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key)
-    return reply({ error: "L’envoi des devis n’est pas configuré sur le serveur." }, 503);
-  // Every database request uses the caller's JWT and RLS, never a service-role key.
-  const db = createClient(url, key, {
-    global: { headers: { Authorization: authorization } },
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-  });
+  const session = await openSession(request);
+  if (session.error) return session.error;
+  const { db, owner } = session;
   try {
-    const { data: auth, error: authError } = await db.auth.getUser(authorization.slice(7));
-    if (authError || !auth.user) return reply({ error: "Session expirée. Reconnectez-vous." }, 401);
-    const owner = auth.user.id;
-    const { data: setting, error: settingError } = await db
-      .from("app_settings")
-      .select("value")
-      .eq("owner_id", owner)
-      .eq("key", FIELD_SERVICE_QUOTE_SECRET_KEY)
-      .maybeSingle();
-    if (settingError)
-      return reply({ error: "Impossible de lire la configuration du webhook." }, 503);
-    const secret = setting?.value?.secret;
-    if (typeof secret !== "string" || !secret)
-      return reply(
-        { error: "Configurez le secret partagé dans l’onglet Webhooks avant d’envoyer." },
-        409,
-      );
+    const config = await loadConfig(db, owner);
+    if (config.error) return config.error;
     const { data, error } = await db.rpc("get_quote_webhook_snapshot", { p_quote_id: quoteId });
     if (error)
       return reply(
@@ -91,7 +66,10 @@ export async function sendFieldServiceQuoteReturn(request: Request, quoteId: str
       );
     let outcome: { delivered: boolean; status: number | null; error?: string };
     try {
-      outcome = await postFieldServiceQuote(secret, payload);
+      outcome = await postQuoteWebhook(config.destination, payload, {
+        apikey: config.apikey,
+        secret: config.secret,
+      });
     } catch {
       outcome = {
         delivered: false,

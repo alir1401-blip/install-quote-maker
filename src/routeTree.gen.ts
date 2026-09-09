@@ -38,6 +38,7 @@ import { Route as AuthenticatedSiteSiteSlugRouteImport } from './routes/_authent
 import { Route as AuthenticatedStockTicketsLocationIdRouteImport } from './routes/_authenticated/stock-tickets.$locationId'
 import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers.$supplierId'
 import { Route as AuthenticatedTicketTicketSlugRouteImport } from './routes/_authenticated/ticket.$ticketSlug'
+import { Route as ApiQuotesWebhookTestRouteImport } from './routes/api.quotes.webhook-test'
 import { Route as ApiWebhooksTokenRouteImport } from './routes/api.webhooks.$token'
 import { Route as ApiImportsInstallationsTokenRouteImport } from './routes/api.imports.installations.$token'
 import { Route as ApiQuotesQuoteIdFieldServiceQuoteRouteImport } from './routes/api.quotes.$quoteId.field-service-quote'
@@ -202,6 +203,11 @@ const AuthenticatedTicketTicketSlugRoute =
     path: '/ticket/$ticketSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiQuotesWebhookTestRoute = ApiQuotesWebhookTestRouteImport.update({
+  id: '/api/quotes/webhook-test',
+  path: '/api/quotes/webhook-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksTokenRoute = ApiWebhooksTokenRouteImport.update({
   id: '/api/webhooks/$token',
   path: '/api/webhooks/$token',
@@ -258,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/stock-tickets/$locationId': typeof AuthenticatedStockTicketsLocationIdRoute
   '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
+  '/api/quotes/webhook-test': typeof ApiQuotesWebhookTestRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/stock-tickets/$locationId': typeof AuthenticatedStockTicketsLocationIdRoute
   '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
+  '/api/quotes/webhook-test': typeof ApiQuotesWebhookTestRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/_authenticated/stock-tickets/$locationId': typeof AuthenticatedStockTicketsLocationIdRoute
   '/_authenticated/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/_authenticated/ticket/$ticketSlug': typeof AuthenticatedTicketTicketSlugRoute
+  '/api/quotes/webhook-test': typeof ApiQuotesWebhookTestRoute
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/_authenticated/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
@@ -367,6 +376,7 @@ export interface FileRouteTypes {
     | '/stock-tickets/$locationId'
     | '/suppliers/$supplierId'
     | '/ticket/$ticketSlug'
+    | '/api/quotes/webhook-test'
     | '/api/webhooks/$token'
     | '/quotes/'
     | '/api/imports/installations/$token'
@@ -402,6 +412,7 @@ export interface FileRouteTypes {
     | '/stock-tickets/$locationId'
     | '/suppliers/$supplierId'
     | '/ticket/$ticketSlug'
+    | '/api/quotes/webhook-test'
     | '/api/webhooks/$token'
     | '/quotes'
     | '/api/imports/installations/$token'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock-tickets/$locationId'
     | '/_authenticated/suppliers/$supplierId'
     | '/_authenticated/ticket/$ticketSlug'
+    | '/api/quotes/webhook-test'
     | '/api/webhooks/$token'
     | '/_authenticated/quotes/'
     | '/api/imports/installations/$token'
@@ -450,6 +462,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiQuotesWebhookTestRoute: typeof ApiQuotesWebhookTestRoute
   ApiWebhooksTokenRoute: typeof ApiWebhooksTokenRoute
   ApiImportsInstallationsTokenRoute: typeof ApiImportsInstallationsTokenRoute
   ApiQuotesQuoteIdFieldServiceQuoteRoute: typeof ApiQuotesQuoteIdFieldServiceQuoteRoute
@@ -662,6 +675,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTicketTicketSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/quotes/webhook-test': {
+      id: '/api/quotes/webhook-test'
+      path: '/api/quotes/webhook-test'
+      fullPath: '/api/quotes/webhook-test'
+      preLoaderRoute: typeof ApiQuotesWebhookTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/$token': {
       id: '/api/webhooks/$token'
       path: '/api/webhooks/$token'
@@ -789,6 +809,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiQuotesWebhookTestRoute: ApiQuotesWebhookTestRoute,
   ApiWebhooksTokenRoute: ApiWebhooksTokenRoute,
   ApiImportsInstallationsTokenRoute: ApiImportsInstallationsTokenRoute,
   ApiQuotesQuoteIdFieldServiceQuoteRoute:

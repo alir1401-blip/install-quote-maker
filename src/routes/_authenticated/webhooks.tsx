@@ -5,7 +5,6 @@ import { Copy, Loader2, RefreshCw, Send, Webhook } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader, EmptyState } from "@/components/page-header";
 import { QuoteWebhookCard } from "@/components/quote-webhook-card";
-import { FieldServiceQuoteSecretCard } from "@/components/field-service-quote-secret-card";
 import { InstallationImportCard } from "@/components/installation-import-card";
 import { QuoteTicketImportCard } from "@/components/quote-ticket-import-card";
 import { Button } from "@/components/ui/button";
@@ -210,8 +209,6 @@ function WebhooksPage() {
       </Card>
 
       <QuoteWebhookCard ownerId={user.id} />
-
-      <FieldServiceQuoteSecretCard ownerId={user.id} />
 
       {endpoint.data && (
         <>

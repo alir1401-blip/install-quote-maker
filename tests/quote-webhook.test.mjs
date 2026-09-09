@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   buildQuoteWebhookPayload,
+  buildQuoteWebhookTestPayload,
   postQuoteWebhook,
   validateQuoteWebhookUrl,
 } from "../src/lib/quote-webhook.ts";
@@ -97,27 +98,62 @@ test("requires public HTTPS destinations and rejects credentials, local IPs and 
 test("POST sends JSON and event headers without forwarding user credentials; only 2xx is success", async () => {
   const payload = buildQuoteWebhookPayload(snapshot, "e", "now");
   for (const status of [200, 204, 302, 400, 500]) {
-    const result = await postQuoteWebhook(
-      "https://hooks.example.com",
-      payload,
-      async (url, init) => {
+    const result = await postQuoteWebhook("https://hooks.example.com", payload, {
+      send: async (url, init) => {
         assert.equal(init.method, "POST");
         assert.equal(init.redirect, "manual");
         assert.equal(init.headers["Content-Type"], "application/json");
         assert.equal(init.headers["X-Webhook-Id"], "e");
         assert.equal(init.headers.Authorization, undefined);
+        assert.equal(init.headers.apikey, undefined);
+        assert.equal(init.headers["X-Webhook-Secret"], undefined);
         assert.deepEqual(JSON.parse(init.body), payload);
         return new Response(null, { status });
       },
-    );
+    });
     assert.equal(result.delivered, status >= 200 && status < 300);
     assert.equal(result.status, status);
   }
   await assert.rejects(
-    postQuoteWebhook("https://hooks.example.com", payload, async () => {
-      throw new Error("network");
+    postQuoteWebhook("https://hooks.example.com", payload, {
+      send: async () => {
+        throw new Error("network");
+      },
     }),
   );
+});
+
+test("apikey and shared secret are sent as headers only when configured", async () => {
+  const payload = buildQuoteWebhookPayload(snapshot, "e", "now");
+  const result = await postQuoteWebhook("https://hooks.example.com", payload, {
+    apikey: "anon-key",
+    secret: "shared-secret",
+    send: async (url, init) => {
+      assert.equal(init.headers.apikey, "anon-key");
+      assert.equal(init.headers["X-Webhook-Secret"], "shared-secret");
+      return new Response(null, { status: 200 });
+    },
+  });
+  assert.equal(result.delivered, true);
+  // An empty secret must not turn into an empty header the receiver would reject.
+  await postQuoteWebhook("https://hooks.example.com", payload, {
+    apikey: "",
+    secret: "",
+    send: async (url, init) => {
+      assert.equal(init.headers.apikey, undefined);
+      assert.equal(init.headers["X-Webhook-Secret"], undefined);
+      return new Response(null, { status: 200 });
+    },
+  });
+});
+
+test("the test payload is flagged and carries no real quote", () => {
+  const payload = buildQuoteWebhookTestPayload("id", "now");
+  assert.equal(payload.event, "quote.exported");
+  assert.equal(payload.test, true);
+  assert.equal(payload.event_id, "id");
+  assert.deepEqual(payload.items, []);
+  assert.equal(payload.quote.ticket_id, null);
 });
 test("rejects unauthenticated requests and malformed IDs before accessing data or sending", async () => {
   assert.equal(
