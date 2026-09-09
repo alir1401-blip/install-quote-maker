@@ -21,6 +21,7 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Config | null>(null);
   const [reveal, setReveal] = useState(false);
+  const [testTicketId, setTestTicketId] = useState("");
   const configKey = ["quote-webhook-config", ownerId];
   const config = useQuery({
     queryKey: configKey,
@@ -75,7 +76,11 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
       if (error || !data.session) throw new Error("Connectez-vous pour envoyer un test.");
       const response = await fetch("/api/quotes/webhook-test", {
         method: "POST",
-        headers: { Authorization: `Bearer ${data.session.access_token}` },
+        headers: {
+          Authorization: `Bearer ${data.session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ticket_id: testTicketId.trim() }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.delivered)
@@ -175,24 +180,42 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
               />
               <Label htmlFor="quote-webhook-enabled">Activer l’envoi des devis</Label>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="submit" disabled={save.isPending}>
-                {save.isPending ? "Enregistrement…" : "Enregistrer"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={sendTest.isPending || save.isPending || !!draft}
-                title={
-                  draft
-                    ? "Enregistrez la configuration avant de tester."
-                    : "Envoyer un devis fictif pour vérifier l’URL, l’apikey et le secret"
-                }
-                onClick={() => sendTest.mutate()}
-              >
-                <Send className="mr-2 h-4 w-4" />
-                {sendTest.isPending ? "Envoi du test…" : "Envoyer un test"}
-              </Button>
+            <Button type="submit" disabled={save.isPending}>
+              {save.isPending ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+            <div className="space-y-2 border-t pt-3">
+              <Label htmlFor="quote-webhook-test-ticket">
+                Test : quote.ticket_id (ticket existant chez le destinataire)
+              </Label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  id="quote-webhook-test-ticket"
+                  placeholder="T-1042"
+                  value={testTicketId}
+                  disabled={sendTest.isPending}
+                  className="font-mono text-xs"
+                  onChange={(event) => setTestTicketId(event.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={sendTest.isPending || save.isPending || !!draft}
+                  title={
+                    draft
+                      ? "Enregistrez la configuration avant de tester."
+                      : "Envoyer un devis fictif pour vérifier l’URL, l’apikey et le secret"
+                  }
+                  onClick={() => sendTest.mutate()}
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  {sendTest.isPending ? "Envoi du test…" : "Envoyer un test"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Chaque test porte un numéro de devis différent (TEST-…), donc il est répétable ;
+                changez le ticket ci-dessus pour viser un autre ticket. Laissé vide, le test part
+                avec quote.ticket_id null.
+              </p>
             </div>
           </form>
         )}

@@ -71,7 +71,15 @@ export async function sendQuoteWebhookTest(request: Request) {
   try {
     const config = await loadConfig(session.db, session.owner);
     if (config.error) return config.error;
-    const payload = buildQuoteWebhookTestPayload(crypto.randomUUID(), new Date().toISOString());
+    const body = await request.json().catch(() => null);
+    const ticketId = typeof body?.ticket_id === "string" ? body.ticket_id.trim() : "";
+    if (ticketId.length > 200)
+      return reply({ error: "L’identifiant de ticket de test est trop long." }, 400);
+    const payload = buildQuoteWebhookTestPayload(
+      crypto.randomUUID(),
+      new Date().toISOString(),
+      ticketId,
+    );
     let outcome: { delivered: boolean; status: number | null; error?: string };
     try {
       outcome = await postQuoteWebhook(config.destination, payload, {

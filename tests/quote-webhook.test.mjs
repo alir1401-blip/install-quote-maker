@@ -189,13 +189,21 @@ test("apikey and shared secret are sent as headers only when configured", async 
   });
 });
 
-test("the test payload is flagged and carries no real quote", () => {
-  const payload = buildQuoteWebhookTestPayload("id", "now");
+test("the test payload is flagged, repeatable and can target any ticket", () => {
+  const payload = buildQuoteWebhookTestPayload("abcdefgh-1234", "now");
   assert.equal(payload.event, "quote.exported");
   assert.equal(payload.test, true);
-  assert.equal(payload.event_id, "id");
+  assert.equal(payload.event_id, "abcdefgh-1234");
   assert.deepEqual(payload.items, []);
   assert.equal(payload.quote.ticket_id, null);
+  // A different number per attempt keeps retries acceptable for a receiver that dedupes.
+  assert.equal(payload.quote.quote_number, "TEST-abcdefgh");
+  assert.notEqual(
+    buildQuoteWebhookTestPayload("zyxwvuts-9", "now").quote.quote_number,
+    "TEST-abcdefgh",
+  );
+  assert.equal(buildQuoteWebhookTestPayload("id", "now", "T-1042").quote.ticket_id, "T-1042");
+  assert.equal(buildQuoteWebhookTestPayload("id", "now", "").quote.ticket_id, null);
 });
 test("rejects unauthenticated requests and malformed IDs before accessing data or sending", async () => {
   assert.equal(

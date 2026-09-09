@@ -118,7 +118,11 @@ export function buildQuoteWebhookPayload(snapshot: QuoteSnapshot, eventId: strin
   };
 }
 
-export function buildQuoteWebhookTestPayload(eventId: string, sentAt: string) {
+export function buildQuoteWebhookTestPayload(
+  eventId: string,
+  sentAt: string,
+  ticketId?: string | null,
+) {
   return {
     event: "quote.exported",
     schema_version: 1,
@@ -126,7 +130,12 @@ export function buildQuoteWebhookTestPayload(eventId: string, sentAt: string) {
     sent_at: sentAt,
     test: true,
     currency: "EUR",
-    quote: { quote_number: "TEST-0000", ticket_id: null, status: "brouillon" },
+    // A distinct number per attempt so a receiver that rejects duplicates still accepts retries.
+    quote: {
+      quote_number: `TEST-${eventId.slice(0, 8)}`,
+      ticket_id: ticketId || null,
+      status: "brouillon",
+    },
     items: [],
     totals: { total_ht: 0, vat_rate: 0, vat_amount: 0, total_ttc: 0 },
   };
