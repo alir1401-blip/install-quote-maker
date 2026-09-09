@@ -145,6 +145,8 @@ function TicketDetail() {
   const client = clients.find((c: any) => c.id === ticket.client_id);
   const installation = installations.find((i: any) => i.id === ticket.installation_id);
   const isSiteStockTicket = ticket.ticket_type === "site_stock_order";
+  // Diagnostic already done in the field-service tool: no local intervention required.
+  const isImportedTicket = ticket.external_source === "field_service";
   const currentGroupIds = new Set(
     groupTickets.filter((row: any) => row.ticket_id === ticketId).map((row: any) => row.group_id),
   );
@@ -599,7 +601,8 @@ function TicketDetail() {
   };
 
   const createQuoteFromTicket = async () => {
-    if (!ticket || (!installation && !isSiteStockTicket)) return toast.error("Données manquantes");
+    if (!ticket || (!installation && !isSiteStockTicket && !isImportedTicket))
+      return toast.error("Données manquantes");
     const owner_id = await currentUserId();
     try {
       const number = `DEV-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000 + 1000)}`;
@@ -670,6 +673,8 @@ function TicketDetail() {
                   .filter(Boolean)
                   .join(" | ")}`
               : null,
+            // The imported ticket carries the external diagnostic instead of a local report.
+            isImportedTicket && diagnosticReports.length === 0 ? ticket.description : null,
             reportedPartTypes.size > 0
               ? `Pièces à remplacer : ${Array.from(reportedPartTypes).join(", ")}`
               : null,
@@ -1189,7 +1194,7 @@ function TicketDetail() {
             <span className="text-muted-foreground">Titre :</span> {ticket.title}
           </div>
           {ticket.description && (
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 whitespace-pre-line">
               <span className="text-muted-foreground">Description :</span> {ticket.description}
             </div>
           )}
@@ -1259,6 +1264,22 @@ function TicketDetail() {
 
       {/* Workflow */}
       <div className="space-y-6">
+        {isImportedTicket && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">📋 Diagnostic réalisé sur le terrain</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <p className="text-muted-foreground">
+                Ce ticket vient de l’outil terrain : le diagnostic est déjà fait, aucune
+                intervention n’est à planifier ici. Créez directement le devis, puis la commande de
+                pièces depuis le devis.
+              </p>
+              {ticket.description && <p className="whitespace-pre-line">{ticket.description}</p>}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Diagnostic */}
         {ticketInterventions
           .filter((i: any) => i.type === "diagnostic")
@@ -1467,7 +1488,7 @@ function TicketDetail() {
           })}
 
         {/* Create Quote Button - appears when report is done */}
-        {(ticketReports.length > 0 || isSiteStockTicket) &&
+        {(ticketReports.length > 0 || isSiteStockTicket || isImportedTicket) &&
           ticketQuotes.length === 0 &&
           linkedQuotes.length === 0 && (
             <Button onClick={createQuoteFromTicket} className="w-full" size="lg">
@@ -2021,7 +2042,8 @@ function TicketDetail() {
           })}
 
         {/* Create Repair Button */}
-        {!ticketInterventions.find((i: any) => i.type === "reparation") &&
+        {!isImportedTicket &&
+          !ticketInterventions.find((i: any) => i.type === "reparation") &&
           ticketReports.length > 0 && (
             <Button onClick={createRepair} variant="outline" className="w-full">
               Créer intervention de réparation
