@@ -10,7 +10,6 @@ import {
   QUOTE_WEBHOOK_DEFAULTS,
   validateQuoteWebhookUrl,
 } from "@/lib/quote-webhook";
-import { FIELD_SERVICE_QUOTE_EVENTS } from "@/lib/field-service-quote-return";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -94,7 +93,7 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
         .from("history_events")
         .select("id, created_at, event_type, description, metadata")
         .eq("owner_id", ownerId)
-        .in("event_type", [...QUOTE_WEBHOOK_EVENTS, ...FIELD_SERVICE_QUOTE_EVENTS])
+        .in("event_type", QUOTE_WEBHOOK_EVENTS)
         .order("created_at", { ascending: false })
         .limit(20);
       if (error) throw error;
@@ -216,9 +215,9 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
           <p className="mt-2 text-muted-foreground">
             En-têtes envoyés : Content-Type: application/json, X-Webhook-Event, X-Webhook-Id, puis
             apikey et X-Webhook-Secret lorsqu’ils sont renseignés ici. Le devis de test porte test:
-            true et un devis fictif TEST-0000. Pour un devis issu d’un ticket importé, « Envoyer au
-            ticket d’origine » renseigne en plus quote.ticket_id avec l’identifiant du ticket de
-            l’outil terrain.
+            true et un devis fictif TEST-0000. Lorsque le devis vient d’un ticket reçu par webhook,
+            quote.ticket_id contient l’identifiant du ticket source (ticket.id du JSON reçu), afin
+            que le destinataire rattache le devis au bon ticket.
           </p>
         </details>
         <div className="flex items-center justify-between">
@@ -262,12 +261,8 @@ export function QuoteWebhookCard({ ownerId }: { ownerId: string }) {
                     </span>
                   </div>
                   <p className="text-muted-foreground">
-                    {new Date(entry.created_at).toLocaleString("fr-FR")}
-                    {meta.external_ticket_ref
-                      ? ` · retour ticket ${meta.external_ticket_ref}`
-                      : meta.destination_host
-                        ? ` · ${meta.destination_host}`
-                        : ""}
+                    {new Date(entry.created_at).toLocaleString("fr-FR")} ·{" "}
+                    {String(meta.destination_host ?? "")}
                   </p>
                   {entry.description && <p>{entry.description}</p>}
                 </li>

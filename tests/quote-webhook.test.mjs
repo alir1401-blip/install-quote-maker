@@ -60,6 +60,27 @@ test("exports all saved data and totals with linear metres, labour, fees and VAT
   assert.equal(result.document.terms, "Conditions");
   assert.equal(snapshot.items[0].total_ht, undefined);
 });
+test("quote.ticket_id carries the source ticket of an imported ticket, not our internal id", () => {
+  const imported = {
+    ...snapshot,
+    quote: { ...snapshot.quote, ticket_id: "internal-uuid" },
+    tickets: [
+      { id: "local", external_source: null, external_ref: null },
+      { id: "local-2", external_source: "field_service", external_ref: "T-1042-ext" },
+    ],
+  };
+  assert.equal(buildQuoteWebhookPayload(imported, "e", "now").quote.ticket_id, "T-1042-ext");
+  // Quotes created in the app keep their own reference, and null stays null.
+  assert.equal(
+    buildQuoteWebhookPayload(
+      { ...snapshot, quote: { ...snapshot.quote, ticket_id: "internal-uuid" } },
+      "e",
+      "now",
+    ).quote.ticket_id,
+    "internal-uuid",
+  );
+  assert.equal(buildQuoteWebhookPayload(snapshot, "e", "now").quote.ticket_id, null);
+});
 test("handles a stock-site quote without installations or parts and rounds currency", () => {
   const result = buildQuoteWebhookPayload(
     {

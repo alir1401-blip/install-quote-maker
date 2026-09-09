@@ -89,6 +89,11 @@ export function buildQuoteWebhookPayload(snapshot: QuoteSnapshot, eventId: strin
   ] as const;
   const total = parts + labor + fees.reduce((sum, key) => sum + num(q[key]), 0);
   const vat = (total * num(q.vat_rate)) / 100;
+  // The receiver attaches the quote to the ticket it sent us, so quote.ticket_id carries the
+  // source ticket reference rather than our internal identifier whenever the quote has one.
+  const sourceTicket = snapshot.tickets.find(
+    (ticket) => ticket.external_source === "field_service" && ticket.external_ref,
+  );
   return {
     event: "quote.exported",
     schema_version: 1,
@@ -96,6 +101,7 @@ export function buildQuoteWebhookPayload(snapshot: QuoteSnapshot, eventId: strin
     sent_at: sentAt,
     currency: "EUR",
     ...snapshot,
+    quote: { ...q, ticket_id: sourceTicket?.external_ref ?? q.ticket_id ?? null },
     items,
     totals: {
       parts_ht: money(parts),
