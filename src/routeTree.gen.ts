@@ -40,6 +40,7 @@ import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_
 import { Route as AuthenticatedTicketTicketSlugRouteImport } from './routes/_authenticated/ticket.$ticketSlug'
 import { Route as ApiWebhooksTokenRouteImport } from './routes/api.webhooks.$token'
 import { Route as ApiImportsInstallationsTokenRouteImport } from './routes/api.imports.installations.$token'
+import { Route as ApiQuotesQuoteIdFieldServiceQuoteRouteImport } from './routes/api.quotes.$quoteId.field-service-quote'
 import { Route as ApiQuotesQuoteIdWebhookRouteImport } from './routes/api.quotes.$quoteId.webhook'
 import { Route as ApiWebhooksTicketsTokenRouteImport } from './routes/api.webhooks.tickets.$token'
 
@@ -212,6 +213,12 @@ const ApiImportsInstallationsTokenRoute =
     path: '/api/imports/installations/$token',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiQuotesQuoteIdFieldServiceQuoteRoute =
+  ApiQuotesQuoteIdFieldServiceQuoteRouteImport.update({
+    id: '/api/quotes/$quoteId/field-service-quote',
+    path: '/api/quotes/$quoteId/field-service-quote',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiQuotesQuoteIdWebhookRoute = ApiQuotesQuoteIdWebhookRouteImport.update({
   id: '/api/quotes/$quoteId/webhook',
   path: '/api/quotes/$quoteId/webhook',
@@ -254,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/field-service-quote': typeof ApiQuotesQuoteIdFieldServiceQuoteRoute
   '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
   '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
@@ -288,6 +296,7 @@ export interface FileRoutesByTo {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/quotes': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/field-service-quote': typeof ApiQuotesQuoteIdFieldServiceQuoteRoute
   '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
   '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
@@ -324,6 +333,7 @@ export interface FileRoutesById {
   '/api/webhooks/$token': typeof ApiWebhooksTokenRoute
   '/_authenticated/quotes/': typeof AuthenticatedQuotesIndexRoute
   '/api/imports/installations/$token': typeof ApiImportsInstallationsTokenRoute
+  '/api/quotes/$quoteId/field-service-quote': typeof ApiQuotesQuoteIdFieldServiceQuoteRoute
   '/api/quotes/$quoteId/webhook': typeof ApiQuotesQuoteIdWebhookRoute
   '/api/webhooks/tickets/$token': typeof ApiWebhooksTicketsTokenRoute
 }
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/quotes/'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/field-service-quote'
     | '/api/quotes/$quoteId/webhook'
     | '/api/webhooks/tickets/$token'
   fileRoutesByTo: FileRoutesByTo
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/quotes'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/field-service-quote'
     | '/api/quotes/$quoteId/webhook'
     | '/api/webhooks/tickets/$token'
   id:
@@ -429,6 +441,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/$token'
     | '/_authenticated/quotes/'
     | '/api/imports/installations/$token'
+    | '/api/quotes/$quoteId/field-service-quote'
     | '/api/quotes/$quoteId/webhook'
     | '/api/webhooks/tickets/$token'
   fileRoutesById: FileRoutesById
@@ -439,6 +452,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiWebhooksTokenRoute: typeof ApiWebhooksTokenRoute
   ApiImportsInstallationsTokenRoute: typeof ApiImportsInstallationsTokenRoute
+  ApiQuotesQuoteIdFieldServiceQuoteRoute: typeof ApiQuotesQuoteIdFieldServiceQuoteRoute
   ApiQuotesQuoteIdWebhookRoute: typeof ApiQuotesQuoteIdWebhookRoute
   ApiWebhooksTicketsTokenRoute: typeof ApiWebhooksTicketsTokenRoute
 }
@@ -662,6 +676,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiImportsInstallationsTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/quotes/$quoteId/field-service-quote': {
+      id: '/api/quotes/$quoteId/field-service-quote'
+      path: '/api/quotes/$quoteId/field-service-quote'
+      fullPath: '/api/quotes/$quoteId/field-service-quote'
+      preLoaderRoute: typeof ApiQuotesQuoteIdFieldServiceQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/quotes/$quoteId/webhook': {
       id: '/api/quotes/$quoteId/webhook'
       path: '/api/quotes/$quoteId/webhook'
@@ -770,6 +791,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiWebhooksTokenRoute: ApiWebhooksTokenRoute,
   ApiImportsInstallationsTokenRoute: ApiImportsInstallationsTokenRoute,
+  ApiQuotesQuoteIdFieldServiceQuoteRoute:
+    ApiQuotesQuoteIdFieldServiceQuoteRoute,
   ApiQuotesQuoteIdWebhookRoute: ApiQuotesQuoteIdWebhookRoute,
   ApiWebhooksTicketsTokenRoute: ApiWebhooksTicketsTokenRoute,
 }

@@ -70,6 +70,7 @@ export const quoteTicketImportSchema = z
         serial_number: shortText,
         year: z.number().int().min(1800).max(2200).nullable().optional(),
         state: shortText,
+        stopped: z.boolean().nullable().optional(),
       })
       .passthrough()
       .nullable()

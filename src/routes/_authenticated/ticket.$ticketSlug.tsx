@@ -559,6 +559,7 @@ function TicketDetail() {
       reparation_reussie: fd.get("reparation_reussie") ? ok : null,
       besoin_devis: fd.get("besoin_devis") === "on",
       besoin_commande_pieces: fd.get("besoin_commande_pieces") === "on",
+      installation_stopped: fd.get("installation_stopped") === "on",
       pieces_defectueuses: problemPartTypes.map((type) => ({
         type,
         status: "HS",
@@ -671,6 +672,10 @@ function TicketDetail() {
               : null,
             reportedPartTypes.size > 0
               ? `Pièces à remplacer : ${Array.from(reportedPartTypes).join(", ")}`
+              : null,
+            diagnosticReports.some((report: any) => report.installation_stopped) ||
+            quoteTicketsToLink.some((item: any) => item.installation_stopped)
+              ? "⚠ Installation à l’arrêt"
               : null,
           ]
             .filter(Boolean)
@@ -1151,7 +1156,12 @@ function TicketDetail() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Informations du ticket</CardTitle>
-            <Badge className={getStatusColor(ticket.status)}>{ticket.status}</Badge>
+            <div className="flex items-center gap-2">
+              {ticket.installation_stopped && (
+                <Badge variant="destructive">⚠ Installation à l’arrêt</Badge>
+              )}
+              <Badge className={getStatusColor(ticket.status)}>{ticket.status}</Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 text-sm sm:grid-cols-2">
@@ -1388,6 +1398,10 @@ function TicketDetail() {
                           <label className="text-sm">
                             <input name="besoin_commande_pieces" type="checkbox" /> Besoin pièces
                           </label>
+                          <label className="text-sm">
+                            <input name="installation_stopped" type="checkbox" /> Installation à
+                            l’arrêt
+                          </label>
                         </div>
                         <Button size="sm">
                           <FileText className="mr-2 h-4 w-4" />
@@ -1404,6 +1418,9 @@ function TicketDetail() {
                           <p>
                             <b>Constat :</b> {report.constat}
                           </p>
+                          {report.installation_stopped && (
+                            <p className="font-medium text-red-700">⚠ Installation à l’arrêt</p>
+                          )}
                           <p>
                             <b>Actions :</b> {report.actions_realisees}
                           </p>
@@ -1967,6 +1984,10 @@ function TicketDetail() {
                           <label className="text-sm">
                             <input name="besoin_commande_pieces" type="checkbox" /> Besoin pièces
                           </label>
+                          <label className="text-sm">
+                            <input name="installation_stopped" type="checkbox" /> Installation à
+                            l’arrêt
+                          </label>
                         </div>
                         <Button size="sm">
                           <FileText className="mr-2 h-4 w-4" />
@@ -1981,6 +2002,9 @@ function TicketDetail() {
                           <p>
                             <b>Constat :</b> {report.constat}
                           </p>
+                          {report.installation_stopped && (
+                            <p className="font-medium text-red-700">⚠ Installation à l’arrêt</p>
+                          )}
                           <p>
                             <b>Actions :</b> {report.actions_realisees}
                           </p>

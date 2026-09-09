@@ -24,7 +24,12 @@ const example = {
   },
   client: { name: "Société Dupont" },
   site: { name: "Agence Paris", address: "10 rue de Paris", postal_code: "75001", city: "Paris" },
-  equipment: { code: "P-03", equipment_type: "Porte sectionnelle", serial_number: "SN-12345" },
+  equipment: {
+    code: "P-03",
+    equipment_type: "Porte sectionnelle",
+    serial_number: "SN-12345",
+    state: "hs",
+  },
 };
 
 export function QuoteTicketImportCard({
@@ -132,6 +137,11 @@ export function QuoteTicketImportCard({
               La description du ticket reprend ticket.description ainsi que les champs de problem
               (panne, actions déjà réalisées, recommandation) pour préparer le devis. Rejouer la
               même requête (même ticket.id) réutilise le ticket déjà créé.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Si equipment.state vaut « hs » (ou equipment.stopped est true), le ticket est marqué «
+              Installation à l’arrêt » : c’est mis en évidence sur le ticket et repris dans le devis
+              envoyé en retour.
             </p>
           </div>
         </details>

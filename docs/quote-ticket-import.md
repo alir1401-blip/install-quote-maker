@@ -43,6 +43,11 @@ une erreur 404 ou 409 : fournir alors l'UUID voulu. Sans correspondance, la fich
 `equipment_type` et `code` comme nom ; la marque, le modèle et l'état reçus sont ajoutés en
 note. `equipment` est optionnel : sans lui, le ticket est créé sans installation.
 
+Si `equipment.state` vaut `hs` (ou toute variante de « arrêt »/« hors service »), ou si
+`equipment.stopped` vaut `true`, le ticket créé est marqué `installation_stopped = true` : mis
+en évidence sur la fiche ticket et repris en tête de la description du devis renvoyé à l'outil
+terrain.
+
 ## Ticket créé
 
 Le ticket local est créé avec le statut `devis_a_creer` et une description qui reprend

@@ -579,6 +579,9 @@ function TicketsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
+                      {ticket.installation_stopped && (
+                        <Badge variant="destructive">⚠ À l’arrêt</Badge>
+                      )}
                       <Badge className={getStatusColor(ticket.status)}>{ticket.status}</Badge>
                       <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </div>
